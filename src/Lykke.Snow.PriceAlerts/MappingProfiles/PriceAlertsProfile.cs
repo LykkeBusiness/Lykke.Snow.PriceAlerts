@@ -3,6 +3,7 @@ using AutoMapper;
 using Lykke.Snow.Common.Converters;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Domain.Models;
+using MarginTrading.AssetService.Contracts.Products;
 
 namespace Lykke.Snow.PriceAlerts.MappingProfiles
 {
@@ -16,6 +17,8 @@ namespace Lykke.Snow.PriceAlerts.MappingProfiles
             CreateMap<PriceAlertContract, PriceAlert>()
                 .ForMember(x => x.CorrelationId,
                     opt => opt.Ignore());
+
+            CreateMap<ProductContract, ProductCacheModel>();
         }
     }
 }
