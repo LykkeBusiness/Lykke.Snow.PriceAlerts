@@ -9,6 +9,6 @@ namespace Lykke.Snow.PriceAlerts.Domain.Models
         Duplicate,
         CommentTooLong,
         InvalidValidity,
-        InvalidProduct
+        InvalidProduct,
     }
 }

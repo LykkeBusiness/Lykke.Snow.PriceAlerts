@@ -4,6 +4,11 @@ namespace Lykke.Snow.PriceAlerts.Contract.Models.Contracts
     {
         None,
         AlreadyExists,
-        DoesNotExist
+        DoesNotExist,
+        InvalidId,
+        Duplicate,
+        CommentTooLong,
+        InvalidValidity,
+        InvalidProduct,
     }
 }
