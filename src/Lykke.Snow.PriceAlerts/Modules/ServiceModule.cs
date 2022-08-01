@@ -3,6 +3,10 @@
 
 using Autofac;
 using Lykke.Middlewares.Mappers;
+using Lykke.Snow.Common.Correlation;
+using Lykke.Snow.Common.Correlation.Cqrs;
+using Lykke.Snow.Common.Correlation.Http;
+using Lykke.Snow.Common.Correlation.RabbitMq;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Lykke.Snow.PriceAlerts.DomainServices.Caches;
 using Lykke.Snow.PriceAlerts.DomainServices.Services;
@@ -41,6 +45,22 @@ namespace Lykke.Snow.PriceAlerts.Modules
             builder.RegisterType<PriceAlertsCache>()
                 .As<IPriceAlertsCache>()
                 .SingleInstance();
+
+            builder.RegisterType<CorrelationContextAccessor>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<RabbitMqCorrelationManager>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<CqrsCorrelationManager>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<HttpCorrelationHandler>()
+                .AsSelf()
+                .InstancePerDependency();
         }
     }
 }
