@@ -3,6 +3,10 @@
 
 using Autofac;
 using Lykke.Middlewares.Mappers;
+using Lykke.Snow.PriceAlerts.Domain.Services;
+using Lykke.Snow.PriceAlerts.DomainServices.Caches;
+using Lykke.Snow.PriceAlerts.DomainServices.Services;
+using Lykke.Snow.PriceAlerts.Services;
 
 namespace Lykke.Snow.PriceAlerts.Modules
 {
@@ -16,6 +20,26 @@ namespace Lykke.Snow.PriceAlerts.Modules
 
             builder.RegisterType<DefaultLogLevelMapper>()
                 .As<ILogLevelMapper>()
+                .SingleInstance();
+
+            builder.RegisterType<PriceAlertsService>()
+                .As<IPriceAlertsService>()
+                .SingleInstance();
+
+            builder.RegisterType<SystemClock>()
+                .As<ISystemClock>()
+                .SingleInstance();
+
+            builder.RegisterType<StartupManager>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<ProductsCache>()
+                .As<IProductsCache>()
+                .SingleInstance();
+
+            builder.RegisterType<PriceAlertsCache>()
+                .As<IPriceAlertsCache>()
                 .SingleInstance();
         }
     }

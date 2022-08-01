@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using Refit;
 
 namespace Lykke.Snow.PriceAlerts.Client
 {
@@ -7,7 +6,7 @@ namespace Lykke.Snow.PriceAlerts.Client
     // Actual interface methods must be placed here (not in ILykkeServiceClient interface).
 
     /// <summary>
-    /// LykkeService client API interface.
+    ///     LykkeService client API interface.
     /// </summary>
     [PublicAPI]
     public interface IPriceAlertsApi

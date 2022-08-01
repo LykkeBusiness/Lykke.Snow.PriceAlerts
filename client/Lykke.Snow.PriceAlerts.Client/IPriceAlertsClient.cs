@@ -3,7 +3,7 @@
 namespace Lykke.Snow.PriceAlerts.Client
 {
     /// <summary>
-    /// LykkeService client interface.
+    ///     LykkeService client interface.
     /// </summary>
     [PublicAPI]
     public interface IPriceAlertsClient

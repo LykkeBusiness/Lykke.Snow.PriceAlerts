@@ -35,12 +35,14 @@ namespace Lykke.Snow.PriceAlerts.Tests
 
                 foreach (var apiMethod in interfaceMethods)
                 {
-                    var refitGetAttr = apiMethod.CustomAttributes.FirstOrDefault(a => _refitGetAttrType == a.AttributeType);
+                    var refitGetAttr =
+                        apiMethod.CustomAttributes.FirstOrDefault(a => _refitGetAttrType == a.AttributeType);
                     if (refitGetAttr == null)
                         continue;
 
                     var methodParams = apiMethod.GetParameters();
-                    var paramsWithSensitiveData = methodParams.Where(p => _sensitiveParamsNames.Any(s => p.Name.ToLower().Contains(s)));
+                    var paramsWithSensitiveData =
+                        methodParams.Where(p => _sensitiveParamsNames.Any(s => p.Name.ToLower().Contains(s)));
                     sensitiveDataParams.AddRange(
                         paramsWithSensitiveData.Select(i => $"{i.Name} from {apiInterface.Name}.{apiMethod.Name}"));
                 }
@@ -48,7 +50,8 @@ namespace Lykke.Snow.PriceAlerts.Tests
 
             Assert.True(
                 sensitiveDataParams.Count == 0,
-                "These parameters might lead to exposing sensitive data when building url via refit: " + string.Join(", ", sensitiveDataParams));
+                "These parameters might lead to exposing sensitive data when building url via refit: " +
+                string.Join(", ", sensitiveDataParams));
         }
     }
 }
