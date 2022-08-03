@@ -7,6 +7,8 @@ using Autofac.Extensions.DependencyInjection;
 using Lykke.Logs.Serilog;
 using Lykke.Middlewares;
 using Lykke.SettingsReader;
+using Lykke.Snow.Common.Startup;
+using Lykke.Snow.Common.Startup.ApiKey;
 using Lykke.Snow.PriceAlerts.MappingProfiles;
 using Lykke.Snow.PriceAlerts.Modules;
 using Lykke.Snow.PriceAlerts.Services;
@@ -70,13 +72,20 @@ namespace Lykke.Snow.PriceAlerts
 
                 builder.Services.AddControllers();
 
+                builder.Services.AddApiKeyAuth(settingsManager.CurrentValue.PriceAlerts?.PriceAlertsClient);
+
+                builder.Services.AddAuthorization();
+
                 builder.Services.AddSwaggerGen(options =>
                     {
                         options.SwaggerDoc(
                             "v1",
                             new OpenApiInfo {Version = "v1", Title = $"{ApiName}"});
 
-                        // Add api key awareness if required
+                        if (!string.IsNullOrWhiteSpace(settingsManager.CurrentValue.PriceAlerts.PriceAlertsClient?.ApiKey))
+                        {
+                            options.AddApiKeyAwareness();
+                        }
                     })
                     .AddSwaggerGenNewtonsoftSupport();
 
@@ -109,6 +118,9 @@ namespace Lykke.Snow.PriceAlerts
 
                 app.UseSwagger();
                 app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName));
+
+                app.UseAuthentication();
+                app.UseAuthorization();
 
                 app.MapControllers();
                 app.MapHealthChecks("/healthz");
