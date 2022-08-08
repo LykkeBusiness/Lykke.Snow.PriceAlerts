@@ -21,7 +21,6 @@ namespace Lykke.Snow.PriceAlerts.Services
     {
         private readonly ILogger<RabbitMqService> _logger;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IConsole _consoleWriter;
         private readonly RabbitMqCorrelationManager _correlationManager;
 
         private readonly ConcurrentDictionary<(RabbitMqSubscriptionSettings, int), IStartStop> _subscribers =
@@ -32,11 +31,11 @@ namespace Lykke.Snow.PriceAlerts.Services
             new ConcurrentDictionary<RabbitMqSubscriptionSettings, IStartStop>(
                 new SubscriptionSettingsEqualityComparer());
 
-        public RabbitMqService(ILogger<RabbitMqService> logger, IConsole consoleWriter, ILoggerFactory loggerFactory,
+        public RabbitMqService(ILogger<RabbitMqService> logger,
+            ILoggerFactory loggerFactory,
             RabbitMqCorrelationManager correlationManager)
         {
             _logger = logger;
-            _consoleWriter = consoleWriter;
             _loggerFactory = loggerFactory;
             _correlationManager = correlationManager;
         }
