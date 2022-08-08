@@ -50,6 +50,10 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .As<IPriceAlertsCache>()
                 .SingleInstance();
 
+            builder.RegisterType<RabbitMqService>()
+                .As<IRabbitMqService>()
+                .SingleInstance();
+
             builder.RegisterType<CorrelationContextAccessor>()
                 .AsSelf()
                 .SingleInstance();
