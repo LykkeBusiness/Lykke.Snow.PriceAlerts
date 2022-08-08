@@ -42,6 +42,10 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .As<IProductsCache>()
                 .SingleInstance();
 
+            builder.RegisterType<QuoteCache>()
+                .As<IQuoteCache>()
+                .SingleInstance();
+
             builder.RegisterType<PriceAlertsCache>()
                 .As<IPriceAlertsCache>()
                 .SingleInstance();

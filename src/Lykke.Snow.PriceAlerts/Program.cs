@@ -57,6 +57,7 @@ namespace Lykke.Snow.PriceAlerts
                 // Lykke settings manager for using settings service
                 var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
 
+                builder.Services.AddSingleton(settingsManager.CurrentValue);
                 // Add services to the container.
                 builder.Services
                     .AddApplicationInsightsTelemetry()

@@ -14,7 +14,10 @@ namespace Lykke.Snow.PriceAlerts.Settings
 
         public ServiceSettings AssetService { get; set; }
 
-        [Optional, CanBeNull]
-        public ClientSettings PriceAlertsClient { get; set; }
+        public ServiceSettings TradingCore { get; set; }
+
+        [Optional, CanBeNull] public ClientSettings PriceAlertsClient { get; set; }
+
+        public RabbitMqSettings RabbitMq { get; set; }
     }
 }

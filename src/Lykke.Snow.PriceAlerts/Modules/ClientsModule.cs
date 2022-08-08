@@ -2,6 +2,7 @@ using Autofac;
 using Lykke.HttpClientGenerator;
 using Lykke.Snow.PriceAlerts.Settings;
 using MarginTrading.AssetService.Contracts;
+using MarginTrading.Backend.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lykke.Snow.PriceAlerts.Modules
@@ -18,6 +19,8 @@ namespace Lykke.Snow.PriceAlerts.Modules
         protected override void Load(ContainerBuilder builder)
         {
             RegisterClientWithName<IProductsApi>(builder, "Asset", _appSettings.PriceAlerts.AssetService);
+            RegisterClientWithName<IPricesApi>(builder, "MT Core", _appSettings.PriceAlerts.TradingCore);
+            
         }
 
         private static void RegisterClientWithName<TApi>(ContainerBuilder builder, string name,
