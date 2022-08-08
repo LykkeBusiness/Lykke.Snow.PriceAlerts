@@ -13,8 +13,6 @@ namespace Lykke.Snow.PriceAlerts.MappingProfiles
     {
         public PriceAlertsProfile()
         {
-            CreateMap<DateTime, DateTime>().ConvertUsing<EnsureUtcDateTimeKindConverter>();
-
             CreateMap<PriceAlert, PriceAlertContract>();
             CreateMap<PriceAlertContract, PriceAlert>()
                 .ForMember(x => x.CorrelationId,
