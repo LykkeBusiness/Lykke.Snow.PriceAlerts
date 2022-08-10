@@ -10,6 +10,7 @@ using Lykke.Messaging.Serialization;
 using Lykke.Snow.Common.Correlation.Cqrs;
 using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Cqrs;
+using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Projections;
 using Lykke.Snow.PriceAlerts.Settings;
 using MarginTrading.AssetService.Contracts.Products;
@@ -109,7 +110,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
         private static void RegisterEventPublishing(
             ProcessingOptionsDescriptor<IBoundedContextRegistration> contextRegistration)
         {
-            contextRegistration.PublishingEvents(
+            contextRegistration.PublishingEvents(typeof(PriceAlertTriggeredEvent)
                 )
                 .With(DefaultEventPipeline);
         }
