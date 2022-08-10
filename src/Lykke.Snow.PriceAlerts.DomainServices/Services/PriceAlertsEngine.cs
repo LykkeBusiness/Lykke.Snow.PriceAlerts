@@ -102,6 +102,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                 {
                     Price = alert.Price,
                     AlertId = alert.Id,
+                    AccountId = alert.AccountId,
                     PriceType = _mapper.Map<PriceType, PriceTypeContract>(alert.PriceType),
                     ProductId = alert.ProductId,
                     ProductName = product.Name,
