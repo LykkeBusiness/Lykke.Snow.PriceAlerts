@@ -1,16 +1,19 @@
 // Copyright (c) 2020 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using Autofac;
 using Lykke.Middlewares.Mappers;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Correlation.Cqrs;
 using Lykke.Snow.Common.Correlation.Http;
 using Lykke.Snow.Common.Correlation.RabbitMq;
+using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Lykke.Snow.PriceAlerts.DomainServices.Caches;
 using Lykke.Snow.PriceAlerts.DomainServices.Services;
 using Lykke.Snow.PriceAlerts.Services;
+using System.Reactive.Subjects;
 
 namespace Lykke.Snow.PriceAlerts.Modules
 {
@@ -52,6 +55,15 @@ namespace Lykke.Snow.PriceAlerts.Modules
 
             builder.RegisterType<RabbitMqService>()
                 .As<IRabbitMqService>()
+                .SingleInstance();
+
+            builder.RegisterType<Subject<PriceChangedEvent>>()
+                .As<IObservable<PriceChangedEvent>>()
+                .As<IObserver<PriceChangedEvent>>()
+                .SingleInstance();
+
+            builder.RegisterType<CqrsMessageSender>()
+                .As<ICqrsMessageSender>()
                 .SingleInstance();
 
             builder.RegisterType<CorrelationContextAccessor>()

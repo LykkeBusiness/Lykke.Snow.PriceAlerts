@@ -35,6 +35,7 @@ namespace Lykke.Snow.PriceAlerts.Services
         {
             await _productsCache.Init();
             await _priceAlertsCache.Init();
+            await _quoteCache.Init();
 
             await StartRabbitMqServices();
         }

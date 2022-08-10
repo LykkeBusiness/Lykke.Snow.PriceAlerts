@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lykke.Snow.PriceAlerts.Contract.Api;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Requests;
 using Lykke.Snow.PriceAlerts.Contract.Models.Responses;
@@ -17,7 +18,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class PriceAlertsController : ControllerBase
+    public class PriceAlertsController : ControllerBase, IPriceAlertsApi
     {
         private const int MaxTake = 100;
         private const int DefaultTake = 20;

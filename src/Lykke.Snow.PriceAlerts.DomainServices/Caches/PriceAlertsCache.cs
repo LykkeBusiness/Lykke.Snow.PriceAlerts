@@ -69,9 +69,10 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
             throw new NotImplementedException("Only implemented in sql repository");
         }
 
-        public Task<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
         {
-            return Task.FromResult(_cache.Values.Where(x => x.ProductId == productId));
+            throw new Exception("hey");
+            return new ValueTask<IEnumerable<PriceAlert>>(_cache.Values.Where(x => x.ProductId == productId));
         }
 
         public bool IsUnique(PriceAlert priceAlert)

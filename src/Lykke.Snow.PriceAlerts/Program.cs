@@ -9,6 +9,7 @@ using Lykke.Middlewares;
 using Lykke.SettingsReader;
 using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Common.Startup.ApiKey;
+using Lykke.Snow.PriceAlerts.DomainServices.Services;
 using Lykke.Snow.PriceAlerts.MappingProfiles;
 using Lykke.Snow.PriceAlerts.Modules;
 using Lykke.Snow.PriceAlerts.Services;
@@ -68,6 +69,8 @@ namespace Lykke.Snow.PriceAlerts
                         options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     })
                     .AddApiExplorer();
+
+                builder.Services.AddHostedService<PriceAlertsEngine>();
 
                 builder.Services.AddHealthChecks();
 

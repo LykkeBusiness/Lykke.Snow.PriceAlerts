@@ -128,7 +128,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
             return _mapper.Map<List<PriceAlert>>(entities);
         }
         
-        public async Task<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
         {
             throw new NotImplementedException("Only implemented in price alert cache");
         }

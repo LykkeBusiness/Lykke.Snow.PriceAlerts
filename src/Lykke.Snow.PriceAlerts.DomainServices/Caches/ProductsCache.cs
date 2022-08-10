@@ -50,6 +50,12 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
         {
             return _cache.ContainsKey(productId);
         }
+        
+        public ProductCacheModel Get(string productId)
+        {
+            var isSuccess = _cache.TryGetValue(productId, out var result);
+            return isSuccess ? result : null;
+        }
 
         public void Remove(string productId)
         {

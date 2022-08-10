@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lykke.Snow.Common.Model;
 using Lykke.Snow.PriceAlerts.Domain.Models;
@@ -96,6 +97,20 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             return result;
         }
+        
+        public async Task<Result<PriceAlertErrorCodes>> TriggerAsync(string id)
+        {
+            var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
+            if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
+
+            cachedAlert.ModifiedOn = _systemClock.Now();
+            cachedAlert.Status = AlertStatus.Triggered;
+            var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
+
+            // TODO: cqrs
+
+            return result;
+        }
 
         public Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId,
             AlertStatus? status, int skip, int take)
@@ -112,6 +127,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                 alert.Status = AlertStatus.Cancelled;
                 await _priceAlertsCache.UpdateAsync(alert);
             }
+        }
+
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
+        {
+            return _priceAlertsCache.GetActiveByProductId(productId);
         }
 
         public async Task<Result<PriceAlertErrorCodes>> ExpireAsync(string id)

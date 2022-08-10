@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lykke.Snow.Common.Model;
 using Lykke.Snow.PriceAlerts.Domain.Models;
@@ -15,5 +16,7 @@ namespace Lykke.Snow.PriceAlerts.Domain.Services
             int skip, int take);
 
         Task CancelByProductIdAsync(string productId);
+        ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId);
+        Task<Result<PriceAlertErrorCodes>> TriggerAsync(string id);
     }
 }

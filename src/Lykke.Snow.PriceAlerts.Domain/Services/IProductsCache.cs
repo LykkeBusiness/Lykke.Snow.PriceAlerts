@@ -7,5 +7,6 @@ namespace Lykke.Snow.PriceAlerts.Domain.Services
         bool Contains(string productId);
         void Remove(string productId);
         void AddOrUpdate(ProductCacheModel cacheModel);
+        ProductCacheModel Get(string productId);
     }
 }

@@ -5,5 +5,7 @@ namespace Lykke.Snow.PriceAlerts.Domain.Models
         public string ProductId { get; set; }
 
         public string Name { get; set; }
+
+        public string TradingCurrency { get; set; }
     }
 }
