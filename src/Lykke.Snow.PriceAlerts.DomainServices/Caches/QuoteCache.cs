@@ -63,6 +63,9 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
                 return Task.CompletedTask;
             }
 
+            _logger.LogInformation(
+                "Received a new quote: {Received}", quote);
+
             _observer.OnNext(new PriceChangedEvent()
             {
                 ProductId = quote.ProductId,
