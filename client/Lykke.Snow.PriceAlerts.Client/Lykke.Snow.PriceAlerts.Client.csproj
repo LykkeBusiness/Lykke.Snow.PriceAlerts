@@ -20,14 +20,13 @@
         <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="Lykke.Snow.PriceAlerts.Client.xml"/>
+        <None Remove="Lykke.Snow.PriceAlerts.Client.xml" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Lykke.HttpClientGenerator" Version="3.1.1"/>
-        <PackageReference Include="Lykke.SettingsReader" Version="4.0.1"/>
-        <PackageReference Include="Refit" Version="6.3.2"/>
+        <PackageReference Include="Lykke.SettingsReader" Version="4.0.1" />
+        <PackageReference Include="Refit" Version="5.2.4" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Models\"/>
+        <Folder Include="Models\" />
     </ItemGroup>
 </Project>

@@ -71,7 +71,6 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
 
         public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
         {
-            throw new Exception("hey");
             return new ValueTask<IEnumerable<PriceAlert>>(_cache.Values.Where(x => x.ProductId == productId));
         }
 
