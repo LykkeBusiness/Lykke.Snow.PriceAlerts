@@ -4,6 +4,12 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Version>1.0.1</Version>
         <LangVersion>8.0</LangVersion>
+        <Authors>Lykke</Authors>
+        <Company>Lykke</Company>
+        <Description>Contracts package for Lykke.Snow.PriceAlerts API</Description>
+        <PackageId>Lykke.Snow.PriceAlerts.Contracts</PackageId>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Lykke</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
