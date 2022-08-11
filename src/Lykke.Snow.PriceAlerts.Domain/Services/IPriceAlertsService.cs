@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lykke.Snow.Common.Model;
@@ -18,5 +19,6 @@ namespace Lykke.Snow.PriceAlerts.Domain.Services
         Task CancelByProductIdAsync(string productId);
         ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId);
         Task<Result<PriceAlertErrorCodes>> TriggerAsync(string id);
+        Task ExpireAllAsync(DateTime expirationDate);
     }
 }

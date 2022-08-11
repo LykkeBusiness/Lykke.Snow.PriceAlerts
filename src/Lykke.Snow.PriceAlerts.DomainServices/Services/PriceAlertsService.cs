@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Snow.Common.Model;
 using Lykke.Snow.PriceAlerts.Domain.Models;
@@ -97,7 +99,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             return result;
         }
-        
+
         public async Task<Result<PriceAlertErrorCodes>> TriggerAsync(string id)
         {
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
@@ -146,6 +148,25 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             // TODO: cqrs
 
             return result;
+        }
+
+        public async Task ExpireAllAsync(DateTime expirationDate)
+        {
+            _logger.LogInformation("Starting to expire price alerts older than {ExpirationDate}", expirationDate);
+            var activePriceAlerts = await _priceAlertsCache.GetAllActiveAlerts();
+            var expiredPriceAlerts = activePriceAlerts.Where(x => x.Validity.HasValue &&
+                                                                  x.Validity < expirationDate);
+
+            foreach (var priceAlert in expiredPriceAlerts)
+            {
+                var result = await ExpireAsync(priceAlert.Id);
+                if (result.IsFailed)
+                {
+                    _logger.LogWarning("Could not expire price alert {Id}, reason {Reason}",
+                        priceAlert.Id,
+                        result.Error);
+                }
+            }
         }
     }
 }
