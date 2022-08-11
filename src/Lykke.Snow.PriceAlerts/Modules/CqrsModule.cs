@@ -14,6 +14,7 @@ using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Projections;
 using Lykke.Snow.PriceAlerts.Settings;
 using MarginTrading.AssetService.Contracts.Products;
+using MarginTrading.Backend.Contracts.TradingSchedule;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
@@ -103,6 +104,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
             RegisterEventPublishing(contextRegistration);
 
             RegisterProductProjection(contextRegistration);
+            RegisterExpirationProcessProjection(contextRegistration);
 
             return contextRegistration;
         }
@@ -124,6 +126,17 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .On(nameof(ProductChangedEvent))
                 .WithProjection(
                     typeof(ProductProjection), _settings.ContextNames.SettingsService);
+        }
+        
+        private void RegisterExpirationProcessProjection(
+            ProcessingOptionsDescriptor<IBoundedContextRegistration> contextRegistration)
+        {
+            contextRegistration.ListeningEvents(
+                    typeof(ExpirationProcessStartedEvent))
+                .From(_settings.ContextNames.TradingEngine)
+                .On(nameof(ExpirationProcessStartedEvent))
+                .WithProjection(
+                    typeof(ExpirationProcessProjection), _settings.ContextNames.TradingEngine);
         }
     }
 }
