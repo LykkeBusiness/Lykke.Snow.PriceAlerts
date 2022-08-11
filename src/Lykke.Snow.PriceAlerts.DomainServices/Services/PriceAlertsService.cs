@@ -63,6 +63,13 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         {
             var isActive = _priceAlertsCache.IsActive(priceAlert.Id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
+            
+            priceAlert.Id = cachedAlert.Id;
+            priceAlert.CreatedOn = cachedAlert.CreatedOn;
+            priceAlert.Direction = cachedAlert.Direction;
+            priceAlert.PriceType = cachedAlert.PriceType;
+            priceAlert.ProductId = cachedAlert.ProductId;
+            priceAlert.CorrelationId = cachedAlert.CorrelationId;
 
             var isUnique = _priceAlertsCache.IsUnique(priceAlert);
             if (!isUnique) return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.Duplicate);
@@ -76,8 +83,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
-            priceAlert.Id = cachedAlert.Id;
-            priceAlert.CreatedOn = cachedAlert.CreatedOn;
+            
             priceAlert.ModifiedOn = _systemClock.Now();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
