@@ -1,6 +1,4 @@
-using System;
 using AutoMapper;
-using Lykke.Snow.Common.Converters;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Requests;
 using Lykke.Snow.PriceAlerts.Domain.Models;
@@ -20,7 +18,9 @@ namespace Lykke.Snow.PriceAlerts.MappingProfiles
                     opt => opt.Ignore());
 
             CreateMap<AddPriceAlertRequest, PriceAlert>();
-            CreateMap<UpdatePriceAlertRequest, PriceAlert>();
+            CreateMap<UpdatePriceAlertRequest, PriceAlert>()
+                .ForMember(dest => dest.Id,
+                    opt => opt.MapFrom((src, dest, destMember, context) => context.Items[nameof(PriceAlert.Id)]));
 
             CreateMap<ProductContract, ProductCacheModel>();
 
