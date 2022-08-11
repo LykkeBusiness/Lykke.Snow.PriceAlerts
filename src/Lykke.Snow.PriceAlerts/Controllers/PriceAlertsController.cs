@@ -67,9 +67,9 @@ namespace Lykke.Snow.PriceAlerts.Controllers
         public async Task<ErrorCodeResponse<PriceAlertErrorCodesContract>> UpdateAsync(
             [FromRoute] [Required] string id, [FromBody] UpdatePriceAlertRequest request)
         {
-            var underlying = _mapper.Map<PriceAlert>(request, opt => opt.Items[nameof(PriceAlert.Id)] = id);
+            var priceAlert = _mapper.Map<PriceAlert>(request, opt => opt.Items[nameof(PriceAlert.Id)] = id);
 
-            var result = await _priceAlertsService.UpdateAsync(underlying);
+            var result = await _priceAlertsService.UpdateAsync(priceAlert);
 
             var response = new ErrorCodeResponse<PriceAlertErrorCodesContract>();
 

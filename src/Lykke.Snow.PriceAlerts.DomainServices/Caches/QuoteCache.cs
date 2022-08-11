@@ -59,8 +59,8 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
             {
                 _logger.LogWarning(
                     "Received quote is older than the quote in cache: cached {Cached}, received {Received}",
-                    previousQuote,
-                    quote);
+                    previousQuote.ToJson(),
+                    quote.ToJson());
                 return Task.CompletedTask;
             }
 

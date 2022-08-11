@@ -76,7 +76,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
-            priceAlert.Id = new PriceAlertId();
+            priceAlert.Id = cachedAlert.Id;
             priceAlert.CreatedOn = cachedAlert.CreatedOn;
             priceAlert.ModifiedOn = _systemClock.Now();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
