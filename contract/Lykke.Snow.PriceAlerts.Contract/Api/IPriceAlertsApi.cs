@@ -28,6 +28,6 @@ namespace Lykke.Snow.PriceAlerts.Contract.Api
 
         [Get("/api/pricealerts/by-account-id/{accountId}")]
         Task<GetPriceAlertsResponse> GetByAccountIdAsync([Required] [NotNull] string accountId,
-            [Body] GetPriceAlertsRequest request);
+            [Query] GetPriceAlertsRequest request);
     }
 }
