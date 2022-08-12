@@ -92,7 +92,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
             return response;
         }
 
-        [HttpPost("by-account-id/{accountId}")]
+        [HttpGet("by-account-id/{accountId}")]
         [ProducesResponseType(typeof(GetPriceAlertsResponse), (int) HttpStatusCode.OK)]
         public async Task<GetPriceAlertsResponse> GetByAccountIdAsync([FromRoute] [Required] string accountId,
             [FromQuery] GetPriceAlertsRequest request)
