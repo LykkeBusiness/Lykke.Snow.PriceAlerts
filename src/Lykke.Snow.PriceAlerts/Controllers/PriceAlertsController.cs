@@ -95,7 +95,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
         [HttpPost("by-account-id/{accountId}")]
         [ProducesResponseType(typeof(GetPriceAlertsResponse), (int) HttpStatusCode.OK)]
         public async Task<GetPriceAlertsResponse> GetByAccountIdAsync([FromRoute] [Required] string accountId,
-            [FromBody] GetPriceAlertsRequest request)
+            [FromQuery] GetPriceAlertsRequest request)
         {
             var skip = request.Skip ?? 0;
             var take = Math.Min(request.Take ?? DefaultTake, MaxTake);
