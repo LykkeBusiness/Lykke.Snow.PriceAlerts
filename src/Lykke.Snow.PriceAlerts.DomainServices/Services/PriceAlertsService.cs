@@ -40,6 +40,9 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isUnique = _priceAlertsCache.IsUnique(priceAlert);
             if (!isUnique) return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.Duplicate);
 
+            if (priceAlert.Price <= 0)
+                return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidPrice);
+
             if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
@@ -70,6 +73,9 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             priceAlert.PriceType = cachedAlert.PriceType;
             priceAlert.ProductId = cachedAlert.ProductId;
             priceAlert.CorrelationId = cachedAlert.CorrelationId;
+            
+            if (priceAlert.Price <= 0)
+                return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidPrice);
 
             var isUnique = _priceAlertsCache.IsUnique(priceAlert);
             if (!isUnique) return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.Duplicate);
