@@ -79,14 +79,21 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                 var priceType = group.Key;
                 var (previousPrice, currentPrice) = GetPriceByType(priceType, @event);
                 var crossingDirection = currentPrice > previousPrice ? CrossingDirection.Up : CrossingDirection.Down;
-                var predicate = GetPricePredicate(crossingDirection);
-                
+                Func<decimal, decimal, decimal, bool> predicate = GetPricePredicate(crossingDirection);
+
                 var alerts = group
                     .Where(x => x.Direction == crossingDirection)
-                    .Where(x => predicate(x.Price, currentPrice));
+                    .Where(x => predicate(x.Price, previousPrice, currentPrice));
 
                 foreach (var alert in alerts)
                 {
+                    _logger.LogInformation(
+                        "Alert triggered: alertId {Id}, previousPrice: {PreviousPrice}, currentPrice {CurrentPrice}, alertPrice {Price}",
+                        alert.Id,
+                        previousPrice,
+                        currentPrice,
+                        alert.Price);
+
                     await Trigger(alert);
                 }
             }
@@ -111,12 +118,14 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             }
         }
 
-        private Func<decimal, decimal, bool> GetPricePredicate(CrossingDirection crossingDirection)
+        private Func<decimal, decimal, decimal, bool> GetPricePredicate(CrossingDirection crossingDirection)
         {
             return crossingDirection switch
             {
-                CrossingDirection.Up => (alertPrice, quotePrice) => alertPrice > quotePrice,
-                CrossingDirection.Down => (alertPrice, quotePrice) => alertPrice < quotePrice,
+                CrossingDirection.Up => (alertPrice, previousPrice, currentPrice) =>
+                    previousPrice < alertPrice && alertPrice < currentPrice,
+                CrossingDirection.Down => (alertPrice, previousPrice, currentPrice) =>
+                    previousPrice > alertPrice && alertPrice > currentPrice,
                 _ => throw new ArgumentOutOfRangeException(nameof(crossingDirection), crossingDirection, null)
             };
         }
