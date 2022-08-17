@@ -10,5 +10,6 @@ namespace Lykke.Snow.PriceAlerts.Contract.Models.Contracts
         CommentTooLong,
         InvalidValidity,
         InvalidProduct,
+        InvalidPrice,
     }
 }
