@@ -82,6 +82,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
             engine.SetReadHeadersAction(correlationManager.FetchCorrelationIfExists);
             engine.StartPublishers();
+            engine.StartSubscribers();
 
             return engine;
         }
