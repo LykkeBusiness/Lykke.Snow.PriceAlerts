@@ -66,14 +66,14 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         {
             var isActive = _priceAlertsCache.IsActive(priceAlert.Id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
-            
+
             priceAlert.Id = cachedAlert.Id;
             priceAlert.CreatedOn = cachedAlert.CreatedOn;
             priceAlert.Direction = cachedAlert.Direction;
             priceAlert.PriceType = cachedAlert.PriceType;
             priceAlert.ProductId = cachedAlert.ProductId;
             priceAlert.CorrelationId = cachedAlert.CorrelationId;
-            
+
             if (priceAlert.Price <= 0)
                 return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidPrice);
 
@@ -89,7 +89,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
-            
+
             priceAlert.ModifiedOn = _systemClock.Now();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
@@ -164,7 +164,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             return cancelled;
         }
 
-        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductIdAsync(string productId)
         {
             return _priceAlertsCache.GetActiveByProductId(productId);
         }
@@ -200,6 +200,18 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                         result.Error);
                 }
             }
+        }
+
+        public async Task<Dictionary<string, int>> GetActiveCountAsync(List<string> productIds, string accountId)
+        {
+            var alerts = (await _priceAlertsCache.GetAllActiveAlerts())
+                .Where(x => x.AccountId == accountId)
+                .Where(x => productIds.Contains(x.ProductId));
+
+            var result = alerts.GroupBy(x => x.ProductId)
+                .ToDictionary(x => x.Key, x => x.Count());
+
+            return result;
         }
     }
 }

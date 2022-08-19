@@ -93,7 +93,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
         }
 
         [HttpDelete("by-product")]
-        [ProducesResponseType(typeof(ErrorCodeResponse<PriceAlertErrorCodesContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(CancelPriceAlertsByProductResponse), (int) HttpStatusCode.OK)]
         public async Task<CancelPriceAlertsByProductResponse> CancelByProductAsync(
             [FromBody] CancelPriceAlertsByProductRequest request)
         {
@@ -122,6 +122,19 @@ namespace Lykke.Snow.PriceAlerts.Controllers
                 result.TotalSize);
 
             return response;
+        }
+
+        [HttpPost("active/count")]
+        [ProducesResponseType(typeof(GetActivePriceAlertsCountResponse), (int) HttpStatusCode.OK)]
+        public async Task<GetActivePriceAlertsCountResponse> GetActiveAlertsCountAsync(
+            [FromBody] GetActivePriceAlertsCountRequest request)
+        {
+            var result = await _priceAlertsService.GetActiveCountAsync(request.Products, request.AccountId);
+
+            return new GetActivePriceAlertsCountResponse()
+            {
+                ActivePriceAlertsByProduct = result,
+            };
         }
     }
 }

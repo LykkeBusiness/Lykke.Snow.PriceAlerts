@@ -71,7 +71,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
         private async Task OnPriceChange(PriceChangedEvent @event)
         {
-            var priceAlerts = await _priceAlertsService.GetActiveByProductId(@event.ProductId);
+            var priceAlerts = await _priceAlertsService.GetActiveByProductIdAsync(@event.ProductId);
 
             var grouped = priceAlerts.GroupBy(x => x.PriceType);
             foreach (var group in grouped)
