@@ -25,6 +25,10 @@ namespace Lykke.Snow.PriceAlerts.Contract.Api
         [Delete("/api/pricealerts/{id}")]
         Task<ErrorCodeResponse<PriceAlertErrorCodesContract>> CancelAsync(
             [Required] [NotNull] string id);
+        
+        [Delete("/api/pricealerts/by-product")]
+        Task<CancelPriceAlertsByProductResponse> CancelByProductAsync(
+            [Body] CancelPriceAlertsByProductRequest request);
 
         [Get("/api/pricealerts/by-account-id/{accountId}")]
         Task<GetPriceAlertsResponse> GetByAccountIdAsync([Required] [NotNull] string accountId,

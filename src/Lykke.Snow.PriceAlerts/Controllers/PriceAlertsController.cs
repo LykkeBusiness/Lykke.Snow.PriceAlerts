@@ -92,6 +92,16 @@ namespace Lykke.Snow.PriceAlerts.Controllers
             return response;
         }
 
+        [HttpDelete("by-product")]
+        [ProducesResponseType(typeof(ErrorCodeResponse<PriceAlertErrorCodesContract>), (int) HttpStatusCode.OK)]
+        public async Task<CancelPriceAlertsByProductResponse> CancelByProductAsync(
+            [FromBody] CancelPriceAlertsByProductRequest request)
+        {
+            var result = await _priceAlertsService.CancelByProductIdAsync(request.ProductId, request.AccountId);
+
+            return new CancelPriceAlertsByProductResponse() {CancelledAlerts = result};
+        }
+
         [HttpGet("by-account-id/{accountId}")]
         [ProducesResponseType(typeof(GetPriceAlertsResponse), (int) HttpStatusCode.OK)]
         public async Task<GetPriceAlertsResponse> GetByAccountIdAsync([FromRoute] [Required] string accountId,

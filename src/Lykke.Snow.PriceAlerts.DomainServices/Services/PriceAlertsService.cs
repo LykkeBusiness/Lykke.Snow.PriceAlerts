@@ -143,6 +143,27 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             }
         }
 
+        public async Task<int> CancelByProductIdAsync(string productId, string accountId)
+        {
+            var alerts = (await _priceAlertsCache.GetActiveByProductId(productId))
+                .Where(x => x.AccountId == accountId);
+
+            var cancelled = 0;
+
+            foreach (var alert in alerts)
+            {
+                alert.ModifiedOn = _systemClock.Now();
+                alert.Status = AlertStatus.Cancelled;
+                var result = await _priceAlertsCache.UpdateAsync(alert);
+                if (result.IsSuccess)
+                {
+                    cancelled++;
+                }
+            }
+
+            return cancelled;
+        }
+
         public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
         {
             return _priceAlertsCache.GetActiveByProductId(productId);
