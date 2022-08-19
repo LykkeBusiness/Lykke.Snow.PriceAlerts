@@ -34,7 +34,7 @@ namespace Lykke.Snow.PriceAlerts.Contract.Api
         Task<GetPriceAlertsResponse> GetByAccountIdAsync([Required] [NotNull] string accountId,
             [Query] GetPriceAlertsRequest request);
 
-        [Post("active/count")]
+        [Post("/api/pricealerts/active/count")]
         Task<GetActivePriceAlertsCountResponse> GetActiveAlertsCountAsync(
             [Body] GetActivePriceAlertsCountRequest request);
     }
