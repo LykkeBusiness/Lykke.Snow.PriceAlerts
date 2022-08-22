@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.AccountsManagement.Contracts.Models;
@@ -7,7 +9,6 @@ using MarginTrading.AssetService.Contracts;
 using MarginTrading.AssetService.Contracts.ErrorCodes;
 using MarginTrading.AssetService.Contracts.TradingConditions;
 using Microsoft.Extensions.Logging;
-using MoreLinq;
 
 namespace Lykke.Snow.PriceAlerts.Projections
 {
@@ -26,11 +27,46 @@ namespace Lykke.Snow.PriceAlerts.Projections
             _logger = logger;
         }
 
+        [UsedImplicitly]
         public async Task Handle(AccountChangedEvent e)
         {
-            if (!(e.EventType == AccountChangedEventTypeContract.Updated
-                  && e.Source == "UpdateClientTradingCondition"))
+            switch (e.EventType)
             {
+                case AccountChangedEventTypeContract.Created:
+                    break;
+                case AccountChangedEventTypeContract.Updated:
+                    await HandleUpdated(e);
+                    break;
+                case AccountChangedEventTypeContract.BalanceUpdated:
+                    break;
+                case AccountChangedEventTypeContract.Deleted:
+                    await HandleDeleted(e);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private async Task HandleDeleted(AccountChangedEvent e)
+        {
+            var accountId = e.Account.Id;
+            _logger.LogInformation("Cancelling all alerts for deleted account {AccountId}",
+                accountId);
+
+            var alerts = await _priceAlertsService.GetActiveByAccountIdAsync(accountId);
+            foreach (var alert in alerts)
+            {
+                await _priceAlertsService.CancelAsync(alert.Id);
+            }
+        }
+
+        private async Task HandleUpdated(AccountChangedEvent e)
+        {
+            if (e.Source != "UpdateClientTradingCondition")
+            {
+                _logger.LogInformation("Ignoring account update for accountId {AccountId} with source {Source}",
+                    e.Account.Id,
+                    e.Source);
                 return;
             }
 
