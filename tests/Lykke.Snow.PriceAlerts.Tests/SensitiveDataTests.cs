@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.Snow.PriceAlerts.Client;
+using Lykke.Snow.PriceAlerts.Contract.Api;
 using Refit;
 using Xunit;
 
@@ -19,7 +19,7 @@ namespace Lykke.Snow.PriceAlerts.Tests
         [Fact]
         public void CheckRoutesInControllersTest()
         {
-            var clientInterface = typeof(IPriceAlertsClient);
+            var clientInterface = typeof(IPriceAlertsApi);
 
             var apiInterfaces = clientInterface
                 .GetProperties()
