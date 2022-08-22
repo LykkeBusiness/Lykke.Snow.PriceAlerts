@@ -13,6 +13,7 @@ using Lykke.Snow.Cqrs;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Projections;
 using Lykke.Snow.PriceAlerts.Settings;
+using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.AssetService.Contracts.Products;
 using MarginTrading.Backend.Contracts.TradingSchedule;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
         private const string DefaultRoute = "self";
         private const string DefaultPipeline = "commands";
         private const string DefaultEventPipeline = "events";
+        private const string AccountProjectionRoute = "a";
         private readonly CqrsContextNamesSettings _contextNames;
         private readonly long _defaultRetryDelayMs;
         private readonly CqrsSettings _settings;
@@ -106,6 +108,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
 
             RegisterProductProjection(contextRegistration);
             RegisterExpirationProcessProjection(contextRegistration);
+            RegisterAccountProjection(contextRegistration);
 
             return contextRegistration;
         }
@@ -127,6 +130,16 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .On(nameof(ProductChangedEvent))
                 .WithProjection(
                     typeof(ProductProjection), _settings.ContextNames.SettingsService);
+        }
+        
+        private void RegisterAccountProjection(
+            ProcessingOptionsDescriptor<IBoundedContextRegistration> contextRegistration)
+        {
+            contextRegistration.ListeningEvents(
+                    typeof(AccountChangedEvent))
+                .From(_settings.ContextNames.AccountsManagement).On(AccountProjectionRoute)
+                .WithProjection(
+                    typeof(AccountProjection), _settings.ContextNames.AccountsManagement);
         }
         
         private void RegisterExpirationProcessProjection(

@@ -16,5 +16,6 @@ namespace Lykke.Snow.PriceAlerts.Domain.Repositories
 
         Task<List<PriceAlert>> GetAllActiveAlerts();
         ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId);
+        ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountId(string accountId);
     }
 }

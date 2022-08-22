@@ -74,6 +74,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
             return new ValueTask<IEnumerable<PriceAlert>>(_cache.Values.Where(x => x.ProductId == productId));
         }
 
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountId(string accountId)
+        {
+            return new ValueTask<IEnumerable<PriceAlert>>(_cache.Values.Where(x => x.AccountId == accountId));
+        }
+
         public bool IsUnique(PriceAlert priceAlert)
         {
             var notUnique = _cache.Values.Any(x => x.SameAs(priceAlert));

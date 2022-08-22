@@ -168,6 +168,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         {
             return _priceAlertsCache.GetActiveByProductId(productId);
         }
+        
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountIdAsync(string accountId)
+        {
+            return _priceAlertsCache.GetActiveByAccountId(accountId);
+        }
 
         public async Task<Result<PriceAlertErrorCodes>> ExpireAsync(string id)
         {

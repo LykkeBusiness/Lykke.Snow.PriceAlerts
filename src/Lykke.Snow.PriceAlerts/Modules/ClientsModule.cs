@@ -19,6 +19,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
         protected override void Load(ContainerBuilder builder)
         {
             RegisterClientWithName<IProductsApi>(builder, "Asset", _appSettings.PriceAlerts.AssetService);
+            RegisterClientWithName<ITradingInstrumentsApi>(builder, "Asset", _appSettings.PriceAlerts.AssetService);
             RegisterClientWithName<IPricesApi>(builder, "MT Core", _appSettings.PriceAlerts.TradingCore);
             
         }
