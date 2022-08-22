@@ -132,5 +132,10 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
         {
             throw new NotImplementedException("Only implemented in price alert cache");
         }
+
+        public ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountId(string accountId)
+        {
+            throw new NotImplementedException("Only implemented in price alert cache");
+        }
     }
 }
