@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using JetBrains.Annotations;
 using Lykke.Snow.PriceAlerts.Domain.Models;
+using Lykke.Snow.PriceAlerts.Domain.Models.InternalCommands;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using MarginTrading.AssetService.Contracts.Enums;
 using MarginTrading.AssetService.Contracts.Products;
@@ -12,21 +15,22 @@ namespace Lykke.Snow.PriceAlerts.Projections
     public class ProductProjection
     {
         private readonly IProductsCache _cache;
+        private readonly IObserver<CancelPriceAlertsCommand> _observer;
         private readonly ILogger<ProductProjection> _logger;
         private readonly IMapper _mapper;
-        private readonly IPriceAlertsService _priceAlertsService;
 
         public ProductProjection(IProductsCache cache,
-            IPriceAlertsService priceAlertsService,
+            IObserver<CancelPriceAlertsCommand> observer,
             IMapper mapper,
             ILogger<ProductProjection> logger)
         {
             _cache = cache;
-            _priceAlertsService = priceAlertsService;
+            _observer = observer;
             _mapper = mapper;
             _logger = logger;
         }
 
+        [UsedImplicitly]
         public async Task Handle(ProductChangedEvent @event)
         {
             switch (@event.ChangeType)
@@ -47,7 +51,7 @@ namespace Lykke.Snow.PriceAlerts.Projections
         {
             var productId = @event.OldValue.ProductId;
             _logger.LogWarning("Product {Id} is deleted. Cancelling all alerts", productId);
-            await Remove(productId);
+            Remove(productId);
         }
 
         private async Task HandleEdition(ProductChangedEvent @event)
@@ -57,7 +61,7 @@ namespace Lykke.Snow.PriceAlerts.Projections
             {
                 var productId = newProduct.ProductId;
                 _logger.LogWarning("Product {Id} is discontinued or stopped. Cancelling all alerts", productId);
-                await Remove(newProduct.ProductId);
+                Remove(newProduct.ProductId);
             }
             else
             {
@@ -66,10 +70,13 @@ namespace Lykke.Snow.PriceAlerts.Projections
             }
         }
 
-        private async Task Remove(string productId)
+        private void Remove(string productId)
         {
             _cache.Remove(productId);
-            await _priceAlertsService.CancelByProductIdAsync(productId);
+            _observer.OnNext(new CancelPriceAlertsCommand(OriginalEventType.InvalidProduct)
+            {
+                Products = new List<string>() {productId}
+            });
         }
     }
 }
