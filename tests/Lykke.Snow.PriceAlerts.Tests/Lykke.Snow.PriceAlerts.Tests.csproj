@@ -3,6 +3,11 @@
         <TargetFramework>net6.0</TargetFramework>
         <Version>1.0.0</Version>
         <LangVersion>8.0</LangVersion>
+        <!--
+          To prevent null reference exceptions, it is better to have corresponding warnings as errors.
+          Link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
+        -->
+    <WarningsAsErrors>8597,8600,8601,8602,8603,8604,8605,8607,8608,8609,8610,8611,8612,8613,8614,8615,8616,8617,8618,8619,8620,8621,8622,8624,8625,8629,8631,8633,8634,8643,8644,8645,8655,8667,8670,8714,8762,8763,8764,8765,8766,8767,8768,8769,8770,8774,8775,8776,8777,8819,8824,8825,8847</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0"/>
@@ -15,4 +20,15 @@
         <ProjectReference Include="..\..\src\Lykke.Snow.PriceAlerts\Lykke.Snow.PriceAlerts.csproj"/>
         <ProjectReference Include="..\..\src\Lykke.Snow.PriceAlerts.DomainServices\Lykke.Snow.PriceAlerts.DomainServices.csproj"/>
     </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="Moq" Version="4.18.1" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\client\Lykke.Snow.PriceAlerts.Client\Lykke.Snow.PriceAlerts.Client.csproj" />
+    <ProjectReference Include="..\..\src\Lykke.Snow.PriceAlerts\Lykke.Snow.PriceAlerts.csproj" />
+    <ProjectReference Include="..\..\src\Lykke.Snow.PriceAlerts.DomainServices\Lykke.Snow.PriceAlerts.DomainServices.csproj" />
+  </ItemGroup>
 </Project>

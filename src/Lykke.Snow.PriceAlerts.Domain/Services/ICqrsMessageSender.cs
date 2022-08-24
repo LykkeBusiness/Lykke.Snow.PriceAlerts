@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Lykke.Snow.PriceAlerts.Domain.Services
 {
     public interface ICqrsMessageSender
     {
-        void SendEvent<TEvent>(TEvent @event);
+        ValueTask SendEvent<TEvent>(TEvent @event);
     }
 }
