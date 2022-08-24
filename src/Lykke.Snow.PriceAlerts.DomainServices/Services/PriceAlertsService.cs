@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Snow.Common.Model;
+using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
+using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Microsoft.Extensions.Logging;
@@ -15,15 +17,18 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         private readonly IPriceAlertsCache _priceAlertsCache;
         private readonly IProductsCache _productsCache;
         private readonly ISystemClock _systemClock;
+        private readonly ICqrsEntityChangedSender _entityChangedSender;
 
         public PriceAlertsService(IPriceAlertsCache priceAlertsCache,
             IProductsCache productsCache,
             ISystemClock systemClock,
+            ICqrsEntityChangedSender entityChangedSender,
             ILogger<PriceAlertsService> logger)
         {
             _priceAlertsCache = priceAlertsCache;
             _productsCache = productsCache;
             _systemClock = systemClock;
+            _entityChangedSender = entityChangedSender;
             _logger = logger;
         }
 
@@ -57,7 +62,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             priceAlert.ModifiedOn = _systemClock.Now();
             var result = await _priceAlertsCache.InsertAsync(priceAlert);
 
-            // TODO: cqrs
+            if (result.IsSuccess)
+            {
+                await _entityChangedSender
+                    .SendEntityCreatedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(priceAlert);
+            }
 
             return result;
         }
@@ -93,7 +102,12 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             priceAlert.ModifiedOn = _systemClock.Now();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
-            // TODO: cqrs
+            if (result.IsSuccess)
+            {
+                await _entityChangedSender
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert);
+            }
 
             return result;
         }
@@ -103,11 +117,17 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
-            cachedAlert.ModifiedOn = _systemClock.Now();
-            cachedAlert.Status = AlertStatus.Cancelled;
-            var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
+            var priceAlert = cachedAlert.ShallowCopy();
+            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.Status = AlertStatus.Cancelled;
+            var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
-            // TODO: cqrs
+            if (result.IsSuccess)
+            {
+                await _entityChangedSender
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert);
+            }
 
             return result;
         }
@@ -117,11 +137,17 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
-            cachedAlert.ModifiedOn = _systemClock.Now();
-            cachedAlert.Status = AlertStatus.Triggered;
-            var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
+            var priceAlert = cachedAlert.ShallowCopy();
+            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.Status = AlertStatus.Triggered;
+            var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
-            // TODO: cqrs
+            if (result.IsSuccess)
+            {
+                await _entityChangedSender
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert);
+            }
 
             return result;
         }
@@ -135,11 +161,19 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         public async Task CancelByProductIdAsync(string productId)
         {
             var alerts = await _priceAlertsCache.GetActiveByProductId(productId);
-            foreach (var alert in alerts)
+            foreach (var cachedAlert in alerts)
             {
-                alert.ModifiedOn = _systemClock.Now();
-                alert.Status = AlertStatus.Cancelled;
-                await _priceAlertsCache.UpdateAsync(alert);
+                var priceAlert = cachedAlert.ShallowCopy();
+                priceAlert.ModifiedOn = _systemClock.Now();
+                priceAlert.Status = AlertStatus.Cancelled;
+                var result = await _priceAlertsCache.UpdateAsync(priceAlert);
+
+                if (result.IsSuccess)
+                {
+                    await _entityChangedSender
+                        .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
+                            priceAlert);
+                }
             }
         }
 
@@ -150,14 +184,20 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             var cancelled = 0;
 
-            foreach (var alert in alerts)
+            foreach (var cachedAlert in alerts)
             {
-                alert.ModifiedOn = _systemClock.Now();
-                alert.Status = AlertStatus.Cancelled;
-                var result = await _priceAlertsCache.UpdateAsync(alert);
+                var priceAlert = cachedAlert.ShallowCopy();
+                priceAlert.ModifiedOn = _systemClock.Now();
+                priceAlert.Status = AlertStatus.Cancelled;
+                var result = await _priceAlertsCache.UpdateAsync(priceAlert);
+
                 if (result.IsSuccess)
                 {
                     cancelled++;
+
+                    await _entityChangedSender
+                        .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
+                            priceAlert);
                 }
             }
 
@@ -168,7 +208,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         {
             return _priceAlertsCache.GetActiveByProductId(productId);
         }
-        
+
         public ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountIdAsync(string accountId)
         {
             return _priceAlertsCache.GetActiveByAccountId(accountId);
@@ -179,11 +219,17 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
-            cachedAlert.ModifiedOn = _systemClock.Now();
-            cachedAlert.Status = AlertStatus.Expired;
-            var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
+            var priceAlert = cachedAlert.ShallowCopy();
+            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.Status = AlertStatus.Expired;
+            var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
-            // TODO: cqrs
+            if (result.IsSuccess)
+            {
+                await _entityChangedSender
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert);
+            }
 
             return result;
         }
