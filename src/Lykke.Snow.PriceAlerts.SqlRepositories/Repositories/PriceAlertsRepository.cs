@@ -116,7 +116,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
             return new PaginatedResponse<PriceAlert>(contents, skip, contents.Count, total);
         }
 
-        public async Task<List<PriceAlert>> GetAllActiveAlerts()
+        public async Task<IEnumerable<PriceAlert>> GetAllActiveAlerts()
         {
             await using var context = _contextFactory.CreateDataContext();
             var query = context.PriceAlerts.AsQueryable();
@@ -126,16 +126,6 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
                 .ToListAsync();
             
             return _mapper.Map<List<PriceAlert>>(entities);
-        }
-        
-        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
-        {
-            throw new NotImplementedException("Only implemented in price alert cache");
-        }
-
-        public ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountId(string accountId)
-        {
-            throw new NotImplementedException("Only implemented in price alert cache");
         }
     }
 }

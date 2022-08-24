@@ -1,13 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
-using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Domain.Models;
+using Lykke.Snow.PriceAlerts.Domain.Models.InternalCommands;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,49 +17,68 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
     public class PriceAlertsEngine : IHostedService
     {
         private readonly IPriceAlertsService _priceAlertsService;
-        private readonly IObservable<PriceChangedEvent> _observable;
+        private readonly IPriceAlertsCache _priceAlertsCache;
+        private readonly IObservable<PriceChangedEvent> _priceChangedObservable;
+        private readonly IObservable<CancelPriceAlertsCommand> _cancelPriceAlertObservable;
+        private readonly IObservable<ExpirePriceAlertsCommand> _expirePriceAlertsObservable;
         private readonly ICqrsMessageSender _cqrsMessageSender;
         private readonly IProductsCache _productsCache;
         private readonly IMapper _mapper;
         private readonly ILogger<PriceAlertsEngine> _logger;
-        private IDisposable _subscription;
+        private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
         public PriceAlertsEngine(
             IPriceAlertsService priceAlertsService,
-            IObservable<PriceChangedEvent> observable,
+            IPriceAlertsCache priceAlertsCache,
+            IObservable<PriceChangedEvent> priceChangedObservable,
+            IObservable<CancelPriceAlertsCommand> cancelPriceAlertObservable,
+            IObservable<ExpirePriceAlertsCommand> expirePriceAlertsObservable,
             ICqrsMessageSender cqrsMessageSender,
             IProductsCache productsCache,
             IMapper mapper,
             ILogger<PriceAlertsEngine> logger)
         {
             _priceAlertsService = priceAlertsService;
-            _observable = observable;
+            _priceAlertsCache = priceAlertsCache;
+            _priceChangedObservable = priceChangedObservable;
+            _cancelPriceAlertObservable = cancelPriceAlertObservable;
+            _expirePriceAlertsObservable = expirePriceAlertsObservable;
             _cqrsMessageSender = cqrsMessageSender;
             _productsCache = productsCache;
             _mapper = mapper;
             _logger = logger;
         }
 
+        #region IHostedService
+
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _subscription = _observable
-                .SelectMany(async x => await OnPriceChangeWrapper(x))
-                .Subscribe();
+            AddSubscription(_priceChangedObservable, OnPriceChange);
+            AddSubscription(_cancelPriceAlertObservable, OnCancel);
+            AddSubscription(_expirePriceAlertsObservable, OnExpire);
 
             return Task.CompletedTask;
+        }
+
+        private void AddSubscription<T>(IObservable<T> observable, Func<T, Task> handler)
+        {
+            _subscriptions.Add(observable
+                .SelectMany(async x => await Wrap(x, handler))
+                .Subscribe()
+            );
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _subscription?.Dispose();
+            _subscriptions.ForEach(x => x.Dispose());
             return Task.CompletedTask;
         }
 
-        private async Task<Unit> OnPriceChangeWrapper(PriceChangedEvent @event)
+        private async Task<Unit> Wrap<TEvent>(TEvent @event, Func<TEvent, Task> handler)
         {
             try
             {
-                await OnPriceChange(@event);
+                await handler(@event);
             }
             catch (Exception e)
             {
@@ -69,9 +88,49 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             return Unit.Default;
         }
 
+        #endregion
+
+        #region Engine Implementation
+
+        private async Task OnCancel(CancelPriceAlertsCommand command)
+        {
+            switch (command.Type)
+            {
+                case OriginalEventType.AccountDeleted:
+                    await _priceAlertsService.CancelByProductAndAccountAsync(accountId: command.AccountId);
+                    break;
+
+                case OriginalEventType.TradingConditionChanged:
+                    foreach (var product in command.Products)
+                    {
+                        await _priceAlertsService.CancelByProductAndAccountAsync(product, command.AccountId);
+                    }
+
+                    break;
+
+                case OriginalEventType.InvalidProduct:
+                    foreach (var product in command.Products)
+                    {
+                        await _priceAlertsService.CancelByProductAndAccountAsync(product);
+                    }
+
+                    break;
+
+                case OriginalEventType.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private async Task OnExpire(ExpirePriceAlertsCommand command)
+        {
+            await _priceAlertsService.ExpireAllAsync(command.ExpirationDate);
+        }
+
         private async Task OnPriceChange(PriceChangedEvent @event)
         {
-            var priceAlerts = await _priceAlertsService.GetActiveByProductIdAsync(@event.ProductId);
+            var priceAlerts = await _priceAlertsCache.GetAllActiveAlerts();
+            priceAlerts = priceAlerts.Where(x => x.ProductId == @event.ProductId);
 
             var grouped = priceAlerts.GroupBy(x => x.PriceType);
             foreach (var group in grouped)
@@ -87,34 +146,27 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
                 foreach (var alert in alerts)
                 {
-                    _logger.LogInformation(
-                        "Alert triggered: alertId {Id}, previousPrice: {PreviousPrice}, currentPrice {CurrentPrice}, alertPrice {Price}",
-                        alert.Id,
-                        previousPrice,
-                        currentPrice,
-                        alert.Price);
-
-                    await Trigger(alert);
+                    var result = await _priceAlertsService.TriggerAsync(alert.Id);
+                    if (result.IsSuccess)
+                    {
+                        _logger.LogInformation(
+                            "Alert triggered: alertId {Id}, previousPrice: {PreviousPrice}, currentPrice {CurrentPrice}, alertPrice {Price}",
+                            alert.Id,
+                            previousPrice,
+                            currentPrice,
+                            alert.Price);
+                    }
+                    else
+                    {
+                        _logger.LogWarning(
+                            "Alert trigger failed: alertId {Id}, previousPrice: {PreviousPrice}, currentPrice {CurrentPrice}, alertPrice {Price}, error {Error}",
+                            alert.Id,
+                            previousPrice,
+                            currentPrice,
+                            alert.Price,
+                            result.Error?.ToString());
+                    }
                 }
-            }
-        }
-
-        private async Task Trigger(PriceAlert alert)
-        {
-            var result = await _priceAlertsService.TriggerAsync(alert.Id);
-            if (result.IsSuccess)
-            {
-                var product = _productsCache.Get(alert.ProductId);
-                _cqrsMessageSender.SendEvent(new PriceAlertTriggeredEvent()
-                {
-                    Price = alert.Price,
-                    AlertId = alert.Id,
-                    AccountId = alert.AccountId,
-                    PriceType = _mapper.Map<PriceType, PriceTypeContract>(alert.PriceType),
-                    ProductId = alert.ProductId,
-                    ProductName = product.Name,
-                    TradingCurrency = product.TradingCurrency,
-                });
             }
         }
 
@@ -140,5 +192,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Price type not found")
             };
         }
+
+        #endregion
     }
 }

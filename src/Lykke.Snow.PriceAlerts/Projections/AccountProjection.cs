@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Lykke.Snow.PriceAlerts.Domain.Models.InternalCommands;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.AccountsManagement.Contracts.Models;
@@ -14,16 +15,19 @@ namespace Lykke.Snow.PriceAlerts.Projections
 {
     public class AccountProjection
     {
-        private readonly IPriceAlertsService _priceAlertsService;
+        private readonly IPriceAlertsCache _priceAlertsCache;
         private readonly ITradingInstrumentsApi _tradingInstrumentsApi;
+        private readonly IObserver<CancelPriceAlertsCommand> _observer;
         private readonly ILogger<AccountProjection> _logger;
 
-        public AccountProjection(IPriceAlertsService priceAlertsService,
+        public AccountProjection(IPriceAlertsCache priceAlertsCache,
             ITradingInstrumentsApi tradingInstrumentsApi,
+            IObserver<CancelPriceAlertsCommand> observer,
             ILogger<AccountProjection> logger)
         {
-            _priceAlertsService = priceAlertsService;
+            _priceAlertsCache = priceAlertsCache;
             _tradingInstrumentsApi = tradingInstrumentsApi;
+            _observer = observer;
             _logger = logger;
         }
 
@@ -53,11 +57,10 @@ namespace Lykke.Snow.PriceAlerts.Projections
             _logger.LogInformation("Cancelling all alerts for deleted account {AccountId}",
                 accountId);
 
-            var alerts = await _priceAlertsService.GetActiveByAccountIdAsync(accountId);
-            foreach (var alert in alerts)
+            _observer.OnNext(new CancelPriceAlertsCommand(OriginalEventType.AccountDeleted)
             {
-                await _priceAlertsService.CancelAsync(alert.Id);
-            }
+                AccountId = accountId,
+            });
         }
 
         private async Task HandleUpdated(AccountChangedEvent e)
@@ -73,7 +76,8 @@ namespace Lykke.Snow.PriceAlerts.Projections
             var tradingConditionId = e.Account.TradingConditionId;
             var accountId = e.Account.Id;
 
-            var alerts = await _priceAlertsService.GetActiveByAccountIdAsync(accountId);
+            var alerts = (await _priceAlertsCache.GetAllActiveAlerts())
+                .Where(x => x.AccountId == accountId);
             var products = alerts.Select(x => x.ProductId).Distinct();
 
             var unavailableProductsResponse = await _tradingInstrumentsApi.CheckProductsUnavailableForTradingCondition(
@@ -95,10 +99,12 @@ namespace Lykke.Snow.PriceAlerts.Projections
             _logger.LogInformation("{N} unavailable products found for accountId {AccountId}",
                 unavailableProductsResponse.UnavailableProductIds.Count,
                 accountId);
-            foreach (var productId in unavailableProductsResponse.UnavailableProductIds)
+
+            _observer.OnNext(new CancelPriceAlertsCommand(OriginalEventType.TradingConditionChanged)
             {
-                await _priceAlertsService.CancelByProductIdAsync(productId, accountId);
-            }
+                AccountId = accountId,
+                Products = unavailableProductsResponse.UnavailableProductIds.ToList(),
+            });
         }
     }
 }

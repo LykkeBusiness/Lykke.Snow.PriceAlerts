@@ -27,7 +27,8 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             where TModel : class
             => SendEntityChangedEvent<TModel, TContract, TEvent>(null, newValue, username, ChangeType.Creation);
 
-        public Task SendEntityEditedEvent<TModel, TContract, TEvent>(TModel oldValue, TModel newValue, string username = null)
+        public Task SendEntityEditedEvent<TModel, TContract, TEvent>(TModel oldValue, TModel newValue,
+            string username = null)
             where TEvent : EntityChangedEvent<TContract>, new()
             where TModel : class
             => SendEntityChangedEvent<TModel, TContract, TEvent>(oldValue, newValue, username, ChangeType.Edition);
