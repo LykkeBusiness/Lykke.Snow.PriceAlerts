@@ -86,7 +86,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .As<IPriceAlertCqrsSender>()
                 .SingleInstance();
             
-            builder.RegisterType<CqrsMessageSender>()
+            builder.RegisterType<CqrsEntityChangedSender>()
                 .As<ICqrsEntityChangedSender>()
                 .SingleInstance();
 
