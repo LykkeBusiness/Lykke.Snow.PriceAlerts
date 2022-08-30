@@ -7,8 +7,14 @@ using Autofac.Extensions.DependencyInjection;
 using Lykke.Logs.Serilog;
 using Lykke.Middlewares;
 using Lykke.SettingsReader;
+using Lykke.Snow.Common.Startup;
+using Lykke.Snow.Common.Startup.ApiKey;
+using Lykke.Snow.PriceAlerts.DomainServices.Services;
+using Lykke.Snow.PriceAlerts.MappingProfiles;
 using Lykke.Snow.PriceAlerts.Modules;
+using Lykke.Snow.PriceAlerts.Services;
 using Lykke.Snow.PriceAlerts.Settings;
+using Lykke.Snow.PriceAlerts.SqlRepositories.MappingProfiles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +28,7 @@ namespace Lykke.Snow.PriceAlerts
 {
     internal sealed class Program
     {
-        private static string ApiName = "PriceAlerts";
+        private static readonly string ApiName = "PriceAlerts";
 
         public static async Task Main(string[] args)
         {
@@ -52,6 +58,8 @@ namespace Lykke.Snow.PriceAlerts
                 // Lykke settings manager for using settings service
                 var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
 
+                builder.Services.AddSingleton(settingsManager.CurrentValue);
+                builder.Services.AddSingleton(settingsManager.CurrentValue.PriceAlerts.Cqrs.ContextNames);
                 // Add services to the container.
                 builder.Services
                     .AddApplicationInsightsTelemetry()
@@ -63,19 +71,30 @@ namespace Lykke.Snow.PriceAlerts
                     })
                     .AddApiExplorer();
 
+                builder.Services.AddHostedService<PriceAlertsEngine>();
+
                 builder.Services.AddHealthChecks();
-                
+
                 builder.Services.AddControllers();
+
+                builder.Services.AddApiKeyAuth(settingsManager.CurrentValue.PriceAlerts?.PriceAlertsClient);
+
+                builder.Services.AddAuthorization();
 
                 builder.Services.AddSwaggerGen(options =>
                     {
                         options.SwaggerDoc(
                             "v1",
-                            new OpenApiInfo { Version = "v1", Title = $"{ApiName}" });
+                            new OpenApiInfo {Version = "v1", Title = $"{ApiName}"});
 
-                        // Add api key awareness if required
+                        if (!string.IsNullOrWhiteSpace(settingsManager.CurrentValue.PriceAlerts.PriceAlertsClient?.ApiKey))
+                        {
+                            options.AddApiKeyAwareness();
+                        }
                     })
                     .AddSwaggerGenNewtonsoftSupport();
+
+                builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
 
                 builder.Host
                     .UseServiceProviderFactory(new AutofacServiceProviderFactory())
@@ -83,28 +102,36 @@ namespace Lykke.Snow.PriceAlerts
                     {
                         // register Autofac modules here
                         cBuilder.RegisterModule(new ServiceModule());
+                        if (!ctx.HostingEnvironment.IsEnvironment("test"))
+                        {
+                            cBuilder.RegisterModule(
+                                new DataModule(settingsManager.CurrentValue.PriceAlerts.Db.ConnectionString));
+                            cBuilder.RegisterModule(new CqrsModule(settingsManager.CurrentValue.PriceAlerts.Cqrs));
+                            cBuilder.RegisterModule(new ClientsModule(settingsManager.CurrentValue));
+                        }
                     })
                     .UseSerilog((_, cfg) => cfg.ReadFrom.Configuration(configuration));
 
                 var app = builder.Build();
 
                 if (app.Environment.IsDevelopment())
-                {
                     app.UseDeveloperExceptionPage();
-                }
                 else
-                {
                     app.UseHsts();
-                }
 
                 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
                 app.UseSwagger();
                 app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName));
 
+                app.UseAuthentication();
+                app.UseAuthorization();
+
                 app.MapControllers();
                 app.MapHealthChecks("/healthz");
 
+                var startupManager = app.Services.GetRequiredService<StartupManager>();
+                await startupManager.Start();
                 await app.RunAsync();
             }
             catch (Exception e)
