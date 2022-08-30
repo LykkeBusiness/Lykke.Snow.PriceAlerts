@@ -17,7 +17,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
         private readonly MsSqlContextFactory<PriceAlertsDbContext> _contextFactory;
         private readonly IMapper _mapper;
 
-        private const string DoesNotExistException =
+        private const string DoesNotExistExceptionMessage =
             "Database operation expected to affect 1 row(s) but actually affected 0 row(s).";
 
         public PriceAlertsRepository(MsSqlContextFactory<PriceAlertsDbContext> contextFactory,
@@ -75,7 +75,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
             }
             catch (DbUpdateConcurrencyException e)
             {
-                if (e.Message.Contains(DoesNotExistException))
+                if (e.Message.Contains(DoesNotExistExceptionMessage))
                     return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
                 throw;
