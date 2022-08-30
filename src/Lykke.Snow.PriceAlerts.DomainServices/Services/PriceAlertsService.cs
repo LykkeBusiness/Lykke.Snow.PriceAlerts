@@ -46,15 +46,15 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.Now())
+            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
             priceAlert.Id = new PriceAlertId();
-            priceAlert.CreatedOn = _systemClock.Now();
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.CreatedOn = _systemClock.UtcNow();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             var result = await _priceAlertsCache.InsertAsync(priceAlert);
 
             // TODO: cqrs
@@ -83,14 +83,14 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.Now())
+            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
 
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
             // TODO: cqrs
@@ -103,7 +103,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
-            cachedAlert.ModifiedOn = _systemClock.Now();
+            cachedAlert.ModifiedOn = _systemClock.UtcNow();
             cachedAlert.Status = AlertStatus.Cancelled;
             var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
 
@@ -117,7 +117,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
-            cachedAlert.ModifiedOn = _systemClock.Now();
+            cachedAlert.ModifiedOn = _systemClock.UtcNow();
             cachedAlert.Status = AlertStatus.Triggered;
             var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
 
@@ -137,7 +137,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var alerts = await _priceAlertsCache.GetActiveByProductId(productId);
             foreach (var alert in alerts)
             {
-                alert.ModifiedOn = _systemClock.Now();
+                alert.ModifiedOn = _systemClock.UtcNow();
                 alert.Status = AlertStatus.Cancelled;
                 await _priceAlertsCache.UpdateAsync(alert);
             }
@@ -152,7 +152,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             foreach (var alert in alerts)
             {
-                alert.ModifiedOn = _systemClock.Now();
+                alert.ModifiedOn = _systemClock.UtcNow();
                 alert.Status = AlertStatus.Cancelled;
                 var result = await _priceAlertsCache.UpdateAsync(alert);
                 if (result.IsSuccess)
@@ -179,7 +179,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isActive = _priceAlertsCache.IsActive(id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
-            cachedAlert.ModifiedOn = _systemClock.Now();
+            cachedAlert.ModifiedOn = _systemClock.UtcNow();
             cachedAlert.Status = AlertStatus.Expired;
             var result = await _priceAlertsCache.UpdateAsync(cachedAlert);
 
