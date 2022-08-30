@@ -5,9 +5,9 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 {
     public class SystemClock : ISystemClock
     {
-        public DateTime Now()
+        public DateTime UtcNow()
         {
-            return DateTime.Now;
+            return DateTime.UtcNow;
         }
     }
 }
