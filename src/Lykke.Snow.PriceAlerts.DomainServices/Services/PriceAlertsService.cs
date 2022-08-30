@@ -121,7 +121,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
             var priceAlert = cachedAlert.ShallowCopy();
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             priceAlert.Status = AlertStatus.Cancelled;
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
@@ -141,7 +141,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
             var priceAlert = cachedAlert.ShallowCopy();
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             priceAlert.Status = AlertStatus.Triggered;
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
@@ -181,7 +181,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             foreach (var cachedAlert in alerts)
             {
                 var priceAlert = cachedAlert.ShallowCopy();
-                priceAlert.ModifiedOn = _systemClock.Now();
+                priceAlert.ModifiedOn = _systemClock.UtcNow();
                 priceAlert.Status = AlertStatus.Cancelled;
                 var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
@@ -204,7 +204,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
 
             var priceAlert = cachedAlert.ShallowCopy();
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             priceAlert.Status = AlertStatus.Expired;
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
