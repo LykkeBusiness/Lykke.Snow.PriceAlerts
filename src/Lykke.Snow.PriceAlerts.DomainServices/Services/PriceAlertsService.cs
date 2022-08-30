@@ -51,18 +51,18 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (priceAlert.Price <= 0)
                 return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidPrice);
 
-            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
+            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.Now())
+            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
             priceAlert.Id = new PriceAlertId();
-            priceAlert.CreatedOn = _systemClock.Now();
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.CreatedOn = _systemClock.UtcNow();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             var result = await _priceAlertsCache.InsertAsync(priceAlert);
 
             if (result.IsSuccess)
@@ -92,17 +92,17 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isUnique = _priceAlertsCache.IsUnique(priceAlert);
             if (!isUnique) return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.Duplicate);
 
-            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
+            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.Now())
+            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
 
-            priceAlert.ModifiedOn = _systemClock.Now();
+            priceAlert.ModifiedOn = _systemClock.UtcNow();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
             if (result.IsSuccess)

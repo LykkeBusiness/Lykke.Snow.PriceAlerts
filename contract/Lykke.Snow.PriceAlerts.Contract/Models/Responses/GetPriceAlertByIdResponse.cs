@@ -1,3 +1,4 @@
+using Lykke.Snow.Contracts.Responses;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 
 namespace Lykke.Snow.PriceAlerts.Contract.Models.Responses
