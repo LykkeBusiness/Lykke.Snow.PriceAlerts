@@ -23,7 +23,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.EntityConfigurations
             builder.Property(x => x.PriceType).IsRequired();
             builder.Property(x => x.ProductId).IsRequired();
 
-            builder.Property(x => x.Comment).HasMaxLength(70);
+            builder.Property(x => x.Comment).HasMaxLength(PriceAlertsConstants.MaxCommentLength);
 
             builder
                 .Property(e => e.PriceType)

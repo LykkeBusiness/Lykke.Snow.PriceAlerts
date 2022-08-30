@@ -43,7 +43,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (priceAlert.Price <= 0)
                 return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidPrice);
 
-            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
+            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
             if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
@@ -80,7 +80,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isUnique = _priceAlertsCache.IsUnique(priceAlert);
             if (!isUnique) return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.Duplicate);
 
-            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > 70)
+            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
             if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
