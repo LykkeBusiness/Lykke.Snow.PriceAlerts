@@ -13,7 +13,7 @@ namespace Lykke.Snow.PriceAlerts.Domain.Services
         Task<Result<PriceAlertErrorCodes>> UpdateAsync(PriceAlert priceAlert);
         Task<Result<PriceAlertErrorCodes>> CancelAsync(string id);
 
-        Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId, AlertStatus? status,
+        Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId, AlertStatus[] statuses,
             int skip, int take);
 
         Task CancelByProductIdAsync(string productId);

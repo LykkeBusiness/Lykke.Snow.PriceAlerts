@@ -6,7 +6,7 @@ namespace Lykke.Snow.PriceAlerts.Contract.Models.Requests
     {
         public string ProductId { get; set; }
 
-        public AlertStatusContract? Status { get; set; }
+        public AlertStatusContract[] Statuses { get; set; }
 
         public int? Skip { get; set; }
 
