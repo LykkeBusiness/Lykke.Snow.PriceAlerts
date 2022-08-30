@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Lykke.Snow.PriceAlerts.Contract.Models.Events;
+using Lykke.Snow.Contracts.Messaging;
 
 namespace Lykke.Snow.PriceAlerts.Domain.Services
 {
