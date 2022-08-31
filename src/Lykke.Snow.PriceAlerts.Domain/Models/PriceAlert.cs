@@ -33,10 +33,29 @@ namespace Lykke.Snow.PriceAlerts.Domain.Models
         ///     CorrelationId of the quote that triggered the alert
         /// </summary>
         public string CorrelationId { get; set; }
-        
+
         public PriceAlert ShallowCopy()
         {
             return (PriceAlert) MemberwiseClone();
+        }
+
+        public bool IsActive()
+        {
+            return Status == AlertStatus.Active;
+        }
+
+        public bool IsDuplicateOf(PriceAlert other)
+        {
+            if (other == null) return false;
+            if (Id == other.Id) return false;
+            
+            return
+                ProductId == other.ProductId &&
+                AccountId == other.AccountId &&
+                PriceType == other.PriceType &&
+                Price == other.Price &&
+                Direction == other.Direction &&
+                IsActive() == other.IsActive();
         }
     }
 }
