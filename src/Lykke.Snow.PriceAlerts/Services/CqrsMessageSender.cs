@@ -23,15 +23,17 @@ namespace Lykke.Snow.PriceAlerts.Services
             _contextNames = contextNames;
         }
 
-        public void SendEvent<TEvent>(TEvent @event)
+        public ValueTask SendEvent<TEvent>(TEvent @event)
         {
             try
             {
                 _cqrsEngine.PublishEvent(@event, _contextNames.PriceAlertsService);
+                return ValueTask.CompletedTask;
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Error on sending event: {Message}", ex.Message);
+                return ValueTask.FromException(ex);
             }
         }
     }

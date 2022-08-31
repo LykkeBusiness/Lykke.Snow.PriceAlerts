@@ -14,6 +14,7 @@ using Lykke.Snow.PriceAlerts.DomainServices.Caches;
 using Lykke.Snow.PriceAlerts.DomainServices.Services;
 using Lykke.Snow.PriceAlerts.Services;
 using System.Reactive.Subjects;
+using Lykke.Snow.PriceAlerts.Domain.Models.InternalCommands;
 
 namespace Lykke.Snow.PriceAlerts.Modules
 {
@@ -62,8 +63,31 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .As<IObserver<PriceChangedEvent>>()
                 .SingleInstance();
 
+            builder.RegisterType<Subject<CancelPriceAlertsCommand>>()
+                .As<IObservable<CancelPriceAlertsCommand>>()
+                .As<IObserver<CancelPriceAlertsCommand>>()
+                .SingleInstance();
+
+            builder.RegisterType<Subject<CancelPriceAlertsCommand>>()
+                .As<IObservable<CancelPriceAlertsCommand>>()
+                .As<IObserver<CancelPriceAlertsCommand>>()
+                .SingleInstance();
+
+            builder.RegisterType<Subject<ExpirePriceAlertsCommand>>()
+                .As<IObservable<ExpirePriceAlertsCommand>>()
+                .As<IObserver<ExpirePriceAlertsCommand>>()
+                .SingleInstance();
+
             builder.RegisterType<CqrsMessageSender>()
                 .As<ICqrsMessageSender>()
+                .SingleInstance();
+
+            builder.RegisterType<PriceAlertCqrsSender>()
+                .As<IPriceAlertCqrsSender>()
+                .SingleInstance();
+            
+            builder.RegisterType<CqrsEntityChangedSender>()
+                .As<ICqrsEntityChangedSender>()
                 .SingleInstance();
 
             builder.RegisterType<CorrelationContextAccessor>()

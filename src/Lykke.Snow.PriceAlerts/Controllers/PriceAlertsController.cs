@@ -98,7 +98,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
         public async Task<CancelPriceAlertsByProductResponse> CancelByProductAsync(
             [FromBody] CancelPriceAlertsByProductRequest request)
         {
-            var result = await _priceAlertsService.CancelByProductIdAsync(request.ProductId, request.AccountId);
+            var result = await _priceAlertsService.CancelByProductAndAccountAsync(request.ProductId, request.AccountId);
 
             return new CancelPriceAlertsByProductResponse() {CancelledAlerts = result};
         }

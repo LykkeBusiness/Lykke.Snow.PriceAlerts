@@ -64,19 +64,9 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
             return _repository.GetByPageAsync(accountId, productId, statuses, skip, take);
         }
 
-        public Task<List<PriceAlert>> GetAllActiveAlerts()
+        public Task<IEnumerable<PriceAlert>> GetAllActiveAlerts()
         {
-            return Task.FromResult(_cache.Values.ToList());
-        }
-
-        public ValueTask<IEnumerable<PriceAlert>> GetActiveByProductId(string productId)
-        {
-            return new ValueTask<IEnumerable<PriceAlert>>(_cache.Values.Where(x => x.ProductId == productId));
-        }
-
-        public ValueTask<IEnumerable<PriceAlert>> GetActiveByAccountId(string accountId)
-        {
-            return new ValueTask<IEnumerable<PriceAlert>>(_cache.Values.Where(x => x.AccountId == accountId));
+            return Task.FromResult(_cache.Values.AsEnumerable());
         }
 
         public bool IsUnique(PriceAlert priceAlert)

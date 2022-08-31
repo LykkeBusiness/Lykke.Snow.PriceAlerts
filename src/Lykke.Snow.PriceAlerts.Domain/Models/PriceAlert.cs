@@ -33,5 +33,10 @@ namespace Lykke.Snow.PriceAlerts.Domain.Models
         ///     CorrelationId of the quote that triggered the alert
         /// </summary>
         public string CorrelationId { get; set; }
+        
+        public PriceAlert ShallowCopy()
+        {
+            return (PriceAlert) MemberwiseClone();
+        }
     }
 }

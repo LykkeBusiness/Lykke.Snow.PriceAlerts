@@ -116,7 +116,8 @@ namespace Lykke.Snow.PriceAlerts.Modules
         private static void RegisterEventPublishing(
             ProcessingOptionsDescriptor<IBoundedContextRegistration> contextRegistration)
         {
-            contextRegistration.PublishingEvents(typeof(PriceAlertTriggeredEvent)
+            contextRegistration.PublishingEvents(typeof(PriceAlertTriggeredEvent),
+                    typeof(PriceAlertChangedEvent)
                 )
                 .With(DefaultEventPipeline);
         }
