@@ -58,7 +58,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
         }
 
         public Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId,
-            AlertStatus[] statuses, int skip, int take)
+            List<AlertStatus> statuses, int skip, int take)
         {
             return _repository.GetByPageAsync(accountId, productId, statuses, skip, take);
         }

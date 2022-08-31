@@ -11,7 +11,8 @@ namespace Lykke.Snow.PriceAlerts.Domain.Repositories
         Task<Result<PriceAlertErrorCodes>> InsertAsync(PriceAlert priceAlert);
         Task<Result<PriceAlertErrorCodes>> UpdateAsync(PriceAlert priceAlert);
 
-        Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId, AlertStatus[] statuses,
+        Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId,
+            List<AlertStatus> statuses,
             int skip, int take);
 
         Task<IEnumerable<PriceAlert>> GetAllActiveAlerts();
