@@ -83,7 +83,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
         }
 
         public async Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId,
-            AlertStatus[] statuses, int skip, int take)
+            List<AlertStatus> statuses, int skip, int take)
         {
             await using var context = _contextFactory.CreateDataContext();
             var query = context.PriceAlerts.AsQueryable();
@@ -94,7 +94,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
                 query = query.Where(x => x.ProductId == productId);
             }
 
-            if (statuses != null && statuses.Length > 0)
+            if (statuses != null && statuses.Count > 0)
             {
                 query = query.Where(x => statuses.Contains(x.Status));
             }

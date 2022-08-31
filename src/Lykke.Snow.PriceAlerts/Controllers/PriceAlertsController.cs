@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -113,7 +114,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
 
             var result =
                 await _priceAlertsService.GetByPageAsync(accountId, request.ProductId,
-                    _mapper.Map<AlertStatusContract[], AlertStatus[]>(request.Statuses), skip, take);
+                    _mapper.Map<List<AlertStatusContract>, List<AlertStatus>>(request.Statuses), skip, take);
 
             var response = new GetPriceAlertsResponse(result.Contents
                     .Select(p => _mapper.Map<PriceAlert, PriceAlertContract>(p))
