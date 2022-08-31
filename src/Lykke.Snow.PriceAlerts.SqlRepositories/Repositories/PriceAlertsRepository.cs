@@ -107,7 +107,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.Repositories
             }
 
             var entities = await query
-                .OrderBy(u => u.ProductId)
+                .OrderByDescending(u => u.CreatedOn)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
