@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
-using Common;
 using Lykke.Snow.Contracts.Responses;
 using Lykke.Snow.PriceAlerts.Contract.Api;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
@@ -15,7 +14,6 @@ using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Lykke.Snow.PriceAlerts.Controllers
 {
@@ -27,16 +25,13 @@ namespace Lykke.Snow.PriceAlerts.Controllers
         private const int MaxTake = 100;
         private const int DefaultTake = 20;
         private readonly IMapper _mapper;
-        private readonly ILogger<PriceAlertsController> _logger;
 
         private readonly IPriceAlertsService _priceAlertsService;
 
-        public PriceAlertsController(IPriceAlertsService priceAlertsService, IMapper mapper,
-            ILogger<PriceAlertsController> logger)
+        public PriceAlertsController(IPriceAlertsService priceAlertsService, IMapper mapper)
         {
             _priceAlertsService = priceAlertsService;
             _mapper = mapper;
-            _logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -75,9 +70,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
             [FromRoute] [Required] string id, [FromBody] UpdatePriceAlertRequest request)
         {
             var priceAlert = _mapper.Map<PriceAlert>(request, opt => opt.Items[nameof(PriceAlert.Id)] = id);
-            _logger.LogInformation("Update priceAlert: request {Request}, priceAlert {PA}",
-                request.ToJson(),
-                priceAlert.ToJson());
+
             var result = await _priceAlertsService.UpdateAsync(priceAlert);
 
             var response = new ErrorCodeResponse<PriceAlertErrorCodesContract>();

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
 using Lykke.Snow.Common.Model;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
@@ -102,9 +101,6 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidProduct);
 
-            
-            _logger.LogInformation("update priceAlert: before update {PA}",
-                priceAlert.ToJson());
 
             priceAlert.ModifiedOn = _systemClock.UtcNow();
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
