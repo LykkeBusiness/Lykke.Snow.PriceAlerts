@@ -8,7 +8,7 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.EntityConfigurations
 {
     public class PriceAlertEntityConfiguration : IEntityTypeConfiguration<PriceAlertEntity>
     {
-        private const string DbDecimal = "decimal(18,2)";
+        private const string DbDecimal = "decimal(18,8)";
 
         public void Configure(EntityTypeBuilder<PriceAlertEntity> builder)
         {
