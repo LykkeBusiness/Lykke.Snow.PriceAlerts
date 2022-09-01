@@ -4,6 +4,7 @@ using Lykke.Snow.PriceAlerts.SqlRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lykke.Snow.PriceAlerts.SqlRepositories.Migrations
 {
     [DbContext(typeof(PriceAlertsDbContext))]
-    partial class PriceAlertsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220901114759_IncreasePrecision")]
+    partial class IncreasePrecision
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
