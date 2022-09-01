@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lykke.Snow.Common.Extensions;
 using Lykke.Snow.Common.Model;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
@@ -54,7 +55,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
+            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value.AssumeUtcIfUnspecified().Date < _systemClock.UtcNow().Date)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
@@ -95,7 +96,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value <= _systemClock.UtcNow())
+            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value.AssumeUtcIfUnspecified().Date < _systemClock.UtcNow().Date)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
@@ -223,7 +224,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             _logger.LogInformation("Starting to expire price alerts older than {ExpirationDate}", expirationDate);
             var activePriceAlerts = await _priceAlertsCache.GetAllActiveAlerts();
             var expiredPriceAlerts = activePriceAlerts.Where(x => x.Validity.HasValue &&
-                                                                  x.Validity < expirationDate);
+                                                                  x.Validity.Value.AssumeUtcIfUnspecified().Date < expirationDate.Date);
 
             foreach (var priceAlert in expiredPriceAlerts)
             {
