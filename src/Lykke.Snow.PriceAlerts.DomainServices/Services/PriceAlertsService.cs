@@ -52,10 +52,12 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             if (priceAlert.Price <= 0)
                 return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidPrice);
 
-            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
+            if (!string.IsNullOrEmpty(priceAlert.Comment) &&
+                priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value.AssumeUtcIfUnspecified().Date < _systemClock.UtcNow().Date)
+            if (priceAlert.Validity.HasValue &&
+                priceAlert.Validity.Value.AssumeUtcIfUnspecified().Date < _systemClock.UtcNow().Date)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
@@ -68,8 +70,10 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             if (result.IsSuccess)
             {
+                var context = await GetContext(priceAlert);
                 await _entityChangedSender
-                    .SendEntityCreatedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(priceAlert);
+                    .SendEntityCreatedEvent<PriceAlert, PriceAlertContract, PriceAlertContext, PriceAlertContextContract
+                        , PriceAlertChangedEvent>(priceAlert, context);
             }
 
             return result;
@@ -93,10 +97,12 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             var isUnique = _priceAlertsCache.IsUnique(priceAlert);
             if (!isUnique) return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.Duplicate);
 
-            if (!string.IsNullOrEmpty(priceAlert.Comment) && priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
+            if (!string.IsNullOrEmpty(priceAlert.Comment) &&
+                priceAlert.Comment.Length > PriceAlertsConstants.MaxCommentLength)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.CommentTooLong);
 
-            if (priceAlert.Validity.HasValue && priceAlert.Validity.Value.AssumeUtcIfUnspecified().Date < _systemClock.UtcNow().Date)
+            if (priceAlert.Validity.HasValue &&
+                priceAlert.Validity.Value.AssumeUtcIfUnspecified().Date < _systemClock.UtcNow().Date)
                 return new Result<PriceAlert, PriceAlertErrorCodes>(PriceAlertErrorCodes.InvalidValidity);
 
             if (string.IsNullOrEmpty(priceAlert.ProductId) || !_productsCache.Contains(priceAlert.ProductId))
@@ -108,9 +114,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             if (result.IsSuccess)
             {
+                var context = await GetContext(priceAlert);
                 await _entityChangedSender
-                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
-                        priceAlert);
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertContext, PriceAlertContextContract,
+                        PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert, context);
             }
 
             return result;
@@ -128,9 +136,12 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             if (result.IsSuccess)
             {
+                var context = await GetContext(priceAlert);
                 await _entityChangedSender
-                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
-                        priceAlert);
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertContext, PriceAlertContextContract,
+                        PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert,
+                        context);
             }
 
             return result;
@@ -148,9 +159,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             if (result.IsSuccess)
             {
+                var context = await GetContext(priceAlert);
                 await _entityChangedSender
-                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
-                        priceAlert);
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertContext, PriceAlertContextContract,
+                        PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert, context);
 
                 await _priceAlertCqrsSender.SendPriceAlertTriggeredEvent(priceAlert);
             }
@@ -190,9 +203,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                 {
                     cancelled++;
 
+                    var context = await GetContext(priceAlert);
                     await _entityChangedSender
-                        .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
-                            priceAlert);
+                        .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertContext,
+                            PriceAlertContextContract, PriceAlertChangedEvent>(cachedAlert,
+                            priceAlert, context);
                 }
             }
 
@@ -211,9 +226,11 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             if (result.IsSuccess)
             {
+                var context = await GetContext(priceAlert);
                 await _entityChangedSender
-                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertChangedEvent>(cachedAlert,
-                        priceAlert);
+                    .SendEntityEditedEvent<PriceAlert, PriceAlertContract, PriceAlertContext, PriceAlertContextContract,
+                        PriceAlertChangedEvent>(cachedAlert,
+                        priceAlert, context);
             }
 
             return result;
@@ -224,7 +241,8 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             _logger.LogInformation("Starting to expire price alerts older than {ExpirationDate}", expirationDate);
             var activePriceAlerts = await _priceAlertsCache.GetAllActiveAlerts();
             var expiredPriceAlerts = activePriceAlerts.Where(x => x.Validity.HasValue &&
-                                                                  x.Validity.Value.AssumeUtcIfUnspecified().Date < expirationDate.Date);
+                                                                  x.Validity.Value.AssumeUtcIfUnspecified().Date <
+                                                                  expirationDate.Date);
 
             foreach (var priceAlert in expiredPriceAlerts)
             {
@@ -238,16 +256,30 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             }
         }
 
-        public async Task<Dictionary<string, int>> GetActiveCountAsync(List<string> productIds, string accountId)
+        public async Task<List<string>> GetProductsWithActiveAlertsAsync(string accountId)
         {
-            var alerts = (await _priceAlertsCache.GetAllActiveAlerts())
+            var all = await _priceAlertsCache.GetAllActiveAlerts();
+
+            var products = all
                 .Where(x => x.AccountId == accountId)
-                .Where(x => productIds.Contains(x.ProductId));
+                .Select(x => x.ProductId)
+                .Distinct()
+                .ToList();
 
-            var result = alerts.GroupBy(x => x.ProductId)
-                .ToDictionary(x => x.Key, x => x.Count());
+            return products;
+        }
 
-            return result;
+        private async Task<PriceAlertContext> GetContext(PriceAlert priceAlert)
+        {
+            var accountId = priceAlert.AccountId;
+            var productId = priceAlert.ProductId;
+            var all = await _priceAlertsCache.GetAllActiveAlerts();
+            var hasActiveAlerts = all.Any(x => x.AccountId == accountId && x.ProductId == productId);
+
+            return new PriceAlertContext()
+            {
+                HasActiveAlerts = hasActiveAlerts,
+            };
         }
     }
 }

@@ -38,6 +38,34 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             where TModel : class
             => SendEntityChangedEvent<TModel, TContract, TEvent>(oldValue, null, username, ChangeType.Deletion);
 
+        public Task SendEntityCreatedEvent<TModel, TContract, TContext, TContextContract, TEvent>(TModel newValue,
+            TContext context,
+            string username = null) where TModel : class
+            where TEvent : EntityChangedEvent<TContract, TContextContract>, new()
+            where TContext : class
+            where TContextContract : class
+            => SendEntityChangedEvent<TModel, TContract, TContext, TContextContract, TEvent>(null, newValue, context,
+                username, ChangeType.Creation);
+
+        public Task SendEntityEditedEvent<TModel, TContract, TContext, TContextContract, TEvent>(TModel oldValue,
+            TModel newValue,
+            TContext context, string username = null) where TModel : class
+            where TEvent : EntityChangedEvent<TContract, TContextContract>, new()
+            where TContext : class
+            where TContextContract : class
+            => SendEntityChangedEvent<TModel, TContract, TContext, TContextContract, TEvent>(oldValue, newValue,
+                context, username, ChangeType.Edition);
+
+        public Task SendEntityDeletedEvent<TModel, TContract, TContext, TContextContract, TEvent>(TModel oldValue,
+            TContext context,
+            string username = null) where TModel : class
+            where TEvent : EntityChangedEvent<TContract, TContextContract>, new()
+            where TContext : class
+            where TContextContract : class
+            => SendEntityChangedEvent<TModel, TContract, TContext, TContextContract, TEvent>(oldValue, null, context,
+                username, ChangeType.Deletion);
+
+
         private async Task SendEntityChangedEvent<TModel, TContract, TEvent>(TModel oldValue, TModel newValue,
             string username, ChangeType changeType)
             where TEvent : EntityChangedEvent<TContract>, new()
@@ -52,6 +80,30 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                 Timestamp = DateTime.UtcNow,
                 OldValue = _mapper.Map<TModel, TContract>(oldValue),
                 NewValue = _mapper.Map<TModel, TContract>(newValue),
+            });
+        }
+
+        private async Task SendEntityChangedEvent<TModel, TContract, TContext, TContextContract, TEvent>(
+            TModel oldValue,
+            TModel newValue,
+            TContext context,
+            string username,
+            ChangeType changeType)
+            where TEvent : EntityChangedEvent<TContract, TContextContract>, new()
+            where TModel : class
+            where TContext : class
+            where TContextContract : class
+        {
+            await _messageSender.SendEvent(new TEvent()
+            {
+                Username = username,
+                ChangeType = changeType,
+                CorrelationId = _correlationContextAccessor.GetOrGenerateCorrelationId(),
+                EventId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.UtcNow,
+                OldValue = _mapper.Map<TModel, TContract>(oldValue),
+                NewValue = _mapper.Map<TModel, TContract>(newValue),
+                Context = _mapper.Map<TContext, TContextContract>(context),
             });
         }
     }
