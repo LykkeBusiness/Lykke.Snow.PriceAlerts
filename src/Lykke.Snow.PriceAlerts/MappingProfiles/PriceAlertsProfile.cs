@@ -33,6 +33,8 @@ namespace Lykke.Snow.PriceAlerts.MappingProfiles
             CreateMap<BestPriceContract, QuoteCacheModel>()
                 .ForMember(x => x.ProductId,
                     opt => opt.MapFrom(x => x.Id));
+
+            CreateMap<PriceAlertContext, PriceAlertContextContract>();
         }
     }
 }
