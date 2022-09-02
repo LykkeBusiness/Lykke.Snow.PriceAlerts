@@ -79,7 +79,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
 
             return response;
         }
-        
+
         [HttpDelete("by-account")]
         [ProducesResponseType(typeof(CancelPriceAlertsByAccountIdResponse), (int) HttpStatusCode.OK)]
         public async Task<CancelPriceAlertsByAccountIdResponse> CancelByAccountAsync(
@@ -136,16 +136,16 @@ namespace Lykke.Snow.PriceAlerts.Controllers
             return response;
         }
 
-        [HttpPost("active/count")]
-        [ProducesResponseType(typeof(GetActivePriceAlertsCountResponse), (int) HttpStatusCode.OK)]
-        public async Task<GetActivePriceAlertsCountResponse> GetActiveAlertsCountAsync(
-            [FromBody] GetActivePriceAlertsCountRequest request)
+        [HttpGet("has-active-alerts")]
+        [ProducesResponseType(typeof(GetProductsWithActiveAlertsResponse), (int) HttpStatusCode.OK)]
+        public async Task<GetProductsWithActiveAlertsResponse> GetProductsWithActiveAlertsAsync(
+            [FromQuery] GetProductsWithActiveAlertsRequest request)
         {
-            var result = await _priceAlertsService.GetActiveCountAsync(request.Products, request.AccountId);
+            var products = await _priceAlertsService.GetProductsWithActiveAlertsAsync(request.AccountId);
 
-            return new GetActivePriceAlertsCountResponse()
+            return new GetProductsWithActiveAlertsResponse()
             {
-                ActivePriceAlertsByProduct = result,
+                Products = products,
             };
         }
     }

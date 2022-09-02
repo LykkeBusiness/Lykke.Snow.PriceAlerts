@@ -12,7 +12,7 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
         <PackageReference Include="Lykke.Snow.Common" Version="1.47.0" />
-        <PackageReference Include="Lykke.Snow.Contracts" Version="1.0.0" />
+        <PackageReference Include="Lykke.Snow.Contracts" Version="1.1.1" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Extensions" />
