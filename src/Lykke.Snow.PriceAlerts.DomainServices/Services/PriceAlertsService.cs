@@ -121,11 +121,9 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
             priceAlert.ModifiedOn = _systemClock.UtcNow();
             
-            _logger.LogInformation("Method {Method}, beforeUpdate {Before}, createdOn kind {CreatedOn}, modifiedOn kind {Modified}",
+            _logger.LogInformation("Method {Method}, beforeUpdate {Before}",
                 nameof(UpdateAsync),
-                priceAlert.ToJson(),
-                priceAlert.CreatedOn.Kind,
-                priceAlert.ModifiedOn.Kind
+                priceAlert.ToJson()
             );
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
