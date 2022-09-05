@@ -25,6 +25,6 @@ namespace Lykke.Snow.PriceAlerts.Settings
 
         public OidcSettings OidcSettings { get; set; }
 
-        public TimeSpan MeteorMessageExpiration { get; set; } = TimeSpan.FromDays(1);
+        [Optional] public TimeSpan MeteorMessageExpiration { get; set; } = TimeSpan.FromDays(1);
     }
 }
