@@ -109,8 +109,8 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .AsSelf()
                 .InstancePerDependency();
 
-            builder.RegisterType<MeteorService>()
-                .As<IMeteorService>()
+            builder.RegisterType<MeteorSender>()
+                .As<IMeteorSender>()
                 .SingleInstance()
                 .WithParameter(new TypedParameter(typeof(TimeSpan), _meteorMessageExpiration));
         }

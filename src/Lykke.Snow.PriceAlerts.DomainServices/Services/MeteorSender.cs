@@ -10,17 +10,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 {
-    public class MeteorService : IMeteorService
+    public class MeteorSender : IMeteorSender
     {
         private readonly IMeteorClient _meteorClient;
         private readonly IProductsCache _productsCache;
         private readonly TimeSpan _expiration;
-        private readonly ILogger<MeteorService> _logger;
+        private readonly ILogger<MeteorSender> _logger;
 
-        public MeteorService(IMeteorClient meteorClient,
+        public MeteorSender(IMeteorClient meteorClient,
             IProductsCache productsCache,
             TimeSpan expiration,
-            ILogger<MeteorService> logger)
+            ILogger<MeteorSender> logger)
         {
             _meteorClient = meteorClient;
             _productsCache = productsCache;
