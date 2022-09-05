@@ -3,7 +3,7 @@ using Lykke.Snow.PriceAlerts.Domain.Models;
 
 namespace Lykke.Snow.PriceAlerts.Domain.Services
 {
-    public interface IMeteorService
+    public interface IMeteorSender
     {
         Task SendPriceAlertTriggered(PriceAlert priceAlert);
     }

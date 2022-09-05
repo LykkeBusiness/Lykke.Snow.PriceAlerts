@@ -21,13 +21,13 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         private readonly IProductsCache _productsCache;
         private readonly ISystemClock _systemClock;
         private readonly ICqrsEntityChangedSender _entityChangedSender;
-        private readonly IMeteorService _meteorService;
+        private readonly IMeteorSender _meteorSender;
 
         public PriceAlertsService(IPriceAlertsCache priceAlertsCache,
             IProductsCache productsCache,
             ISystemClock systemClock,
             ICqrsEntityChangedSender entityChangedSender,
-            IMeteorService meteorService,
+            IMeteorSender meteorSender,
             ILogger<PriceAlertsService> logger) 
 
         {
@@ -35,7 +35,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             _productsCache = productsCache;
             _systemClock = systemClock;
             _entityChangedSender = entityChangedSender;
-            _meteorService = meteorService;
+            _meteorSender = meteorSender;
             _logger = logger;
         }
 
@@ -168,7 +168,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                         PriceAlertChangedEvent>(cachedAlert,
                         priceAlert, context);
 
-                await _meteorService.SendPriceAlertTriggered(priceAlert);
+                await _meteorSender.SendPriceAlertTriggered(priceAlert);
             }
 
             return result;
