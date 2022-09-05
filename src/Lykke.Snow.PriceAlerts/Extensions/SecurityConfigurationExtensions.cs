@@ -2,6 +2,7 @@ using System.Net.Http;
 using IdentityModel.Client;
 using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Common.Startup.Authorization;
+using Lykke.Snow.PriceAlerts.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -40,6 +41,17 @@ namespace Lykke.Snow.PriceAlerts.Extensions
                 renewTokenTimeoutSec));
 
             services.AddSingleton<HttpMessageHandler>(provider => provider.GetService<AccessTokenDelegatingHandler>());
+        }
+
+        public static void AddDelegatingHandler(this IServiceCollection services, OidcSettings settings)
+        {
+            services.AddDelegatingHandler(settings.ApiAuthority,
+                settings.ClientId,
+                settings.ClientSecret,
+                settings.ClientScope,
+                settings.RenewTokenTimeoutSec,
+                settings.ValidateIssuerName,
+                settings.RequireHttps);
         }
     }
 }

@@ -99,14 +99,7 @@ namespace Lykke.Snow.PriceAlerts
                 builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
 
                 var settings = settingsManager.CurrentValue.PriceAlerts;
-                builder.Services.AddDelegatingHandler(
-                    settings.ApiAuthority,
-                    settings.ClientId,
-                    settings.ClientSecret,
-                    settings.ClientScope,
-                    settings.RenewTokenTimeoutSec,
-                    settings.ValidateIssuerName,
-                    settings.RequireHttps);
+                builder.Services.AddDelegatingHandler(settings.OidcSettings);
                 
                 builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());
                 
@@ -117,7 +110,7 @@ namespace Lykke.Snow.PriceAlerts
                     .ConfigureContainer<ContainerBuilder>((ctx, cBuilder) =>
                     {
                         // register Autofac modules here
-                        cBuilder.RegisterModule(new ServiceModule());
+                        cBuilder.RegisterModule(new ServiceModule(settings.MeteorMessageExpiration));
                         if (!ctx.HostingEnvironment.IsEnvironment("test"))
                         {
                             cBuilder.RegisterModule(
