@@ -20,6 +20,13 @@ namespace Lykke.Snow.PriceAlerts.Modules
 {
     internal class ServiceModule : Module
     {
+        private readonly TimeSpan _meteorMessageExpiration;
+
+        public ServiceModule(TimeSpan meteorMessageExpiration)
+        {
+            _meteorMessageExpiration = meteorMessageExpiration;
+        }
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<DefaultHttpStatusCodeMapper>()
@@ -82,10 +89,6 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 .As<ICqrsMessageSender>()
                 .SingleInstance();
 
-            builder.RegisterType<PriceAlertCqrsSender>()
-                .As<IPriceAlertCqrsSender>()
-                .SingleInstance();
-            
             builder.RegisterType<CqrsEntityChangedSender>()
                 .As<ICqrsEntityChangedSender>()
                 .SingleInstance();
@@ -105,6 +108,11 @@ namespace Lykke.Snow.PriceAlerts.Modules
             builder.RegisterType<HttpCorrelationHandler>()
                 .AsSelf()
                 .InstancePerDependency();
+
+            builder.RegisterType<MeteorSender>()
+                .As<IMeteorSender>()
+                .SingleInstance()
+                .WithParameter(new TypedParameter(typeof(TimeSpan), _meteorMessageExpiration));
         }
     }
 }

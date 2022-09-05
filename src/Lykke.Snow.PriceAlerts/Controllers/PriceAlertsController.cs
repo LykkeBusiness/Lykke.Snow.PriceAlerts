@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -79,6 +80,16 @@ namespace Lykke.Snow.PriceAlerts.Controllers
             return response;
         }
 
+        [HttpDelete("by-account")]
+        [ProducesResponseType(typeof(CancelPriceAlertsByAccountIdResponse), (int) HttpStatusCode.OK)]
+        public async Task<CancelPriceAlertsByAccountIdResponse> CancelByAccountAsync(
+            [FromBody] CancelPriceAlertsByAccountIdRequest request)
+        {
+            var result = await _priceAlertsService.CancelByProductAndAccountAsync(accountId: request.AccountId);
+
+            return new CancelPriceAlertsByAccountIdResponse() {CancelledAlerts = result};
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(ErrorCodeResponse<PriceAlertErrorCodesContract>), (int) HttpStatusCode.OK)]
         public async Task<ErrorCodeResponse<PriceAlertErrorCodesContract>> CancelAsync(
@@ -113,7 +124,7 @@ namespace Lykke.Snow.PriceAlerts.Controllers
 
             var result =
                 await _priceAlertsService.GetByPageAsync(accountId, request.ProductId,
-                    _mapper.Map<AlertStatusContract[], AlertStatus[]>(request.Statuses), skip, take);
+                    _mapper.Map<List<AlertStatusContract>, List<AlertStatus>>(request.Statuses), skip, take);
 
             var response = new GetPriceAlertsResponse(result.Contents
                     .Select(p => _mapper.Map<PriceAlert, PriceAlertContract>(p))
@@ -125,16 +136,16 @@ namespace Lykke.Snow.PriceAlerts.Controllers
             return response;
         }
 
-        [HttpPost("active/count")]
-        [ProducesResponseType(typeof(GetActivePriceAlertsCountResponse), (int) HttpStatusCode.OK)]
-        public async Task<GetActivePriceAlertsCountResponse> GetActiveAlertsCountAsync(
-            [FromBody] GetActivePriceAlertsCountRequest request)
+        [HttpGet("has-active-alerts")]
+        [ProducesResponseType(typeof(GetProductsWithActiveAlertsResponse), (int) HttpStatusCode.OK)]
+        public async Task<GetProductsWithActiveAlertsResponse> GetProductsWithActiveAlertsAsync(
+            [FromQuery] GetProductsWithActiveAlertsRequest request)
         {
-            var result = await _priceAlertsService.GetActiveCountAsync(request.Products, request.AccountId);
+            var products = await _priceAlertsService.GetProductsWithActiveAlertsAsync(request.AccountId);
 
-            return new GetActivePriceAlertsCountResponse()
+            return new GetProductsWithActiveAlertsResponse()
             {
-                ActivePriceAlertsByProduct = result,
+                Products = products,
             };
         }
     }

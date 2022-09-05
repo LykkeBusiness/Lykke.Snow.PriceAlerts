@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Snow.Common.Model;
-using Lykke.Snow.PriceAlerts.Domain.Extensions;
 using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Repositories;
 using Lykke.Snow.PriceAlerts.Domain.Services;
@@ -59,7 +58,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
         }
 
         public Task<PaginatedResponse<PriceAlert>> GetByPageAsync(string accountId, string productId,
-            AlertStatus[] statuses, int skip, int take)
+            List<AlertStatus> statuses, int skip, int take)
         {
             return _repository.GetByPageAsync(accountId, productId, statuses, skip, take);
         }
@@ -71,7 +70,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
 
         public bool IsUnique(PriceAlert priceAlert)
         {
-            var notUnique = _cache.Values.Any(x => x.SameAs(priceAlert));
+            var notUnique = _cache.Values.Any(x => x.IsDuplicateOf(priceAlert));
             return !notUnique;
         }
 

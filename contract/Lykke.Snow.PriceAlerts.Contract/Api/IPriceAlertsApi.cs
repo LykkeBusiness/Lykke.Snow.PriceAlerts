@@ -27,6 +27,10 @@ namespace Lykke.Snow.PriceAlerts.Contract.Api
         Task<ErrorCodeResponse<PriceAlertErrorCodesContract>> CancelAsync(
             [Required] [NotNull] string id);
         
+        [Delete("/api/pricealerts/by-account")]
+        Task<CancelPriceAlertsByAccountIdResponse> CancelByAccountAsync(
+            [Body] CancelPriceAlertsByAccountIdRequest request);
+        
         [Delete("/api/pricealerts/by-product")]
         Task<CancelPriceAlertsByProductResponse> CancelByProductAsync(
             [Body] CancelPriceAlertsByProductRequest request);
@@ -35,8 +39,8 @@ namespace Lykke.Snow.PriceAlerts.Contract.Api
         Task<GetPriceAlertsResponse> GetByAccountIdAsync([Required] [NotNull] string accountId,
             [Query] GetPriceAlertsRequest request);
 
-        [Post("/api/pricealerts/active/count")]
-        Task<GetActivePriceAlertsCountResponse> GetActiveAlertsCountAsync(
-            [Body] GetActivePriceAlertsCountRequest request);
+        [Get("/api/pricealerts/has-active-alerts")]
+        Task<GetProductsWithActiveAlertsResponse> GetProductsWithActiveAlertsAsync(
+            [Query] GetProductsWithActiveAlertsRequest request);
     }
 }

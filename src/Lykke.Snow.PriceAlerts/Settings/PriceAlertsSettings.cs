@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using Lykke.SettingsReader.Attributes;
 using Lykke.Snow.Common.Startup.ApiKey;
@@ -19,5 +20,11 @@ namespace Lykke.Snow.PriceAlerts.Settings
         [Optional, CanBeNull] public ClientSettings PriceAlertsClient { get; set; }
 
         public RabbitMqSettings RabbitMq { get; set; }
+
+        public ServiceSettings MeteorService { get; set; }
+
+        public OidcSettings OidcSettings { get; set; }
+
+        [Optional] public TimeSpan MeteorMessageExpiration { get; set; } = TimeSpan.FromDays(1);
     }
 }
