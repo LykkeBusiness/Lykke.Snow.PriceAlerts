@@ -21,13 +21,13 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         private readonly IProductsCache _productsCache;
         private readonly ISystemClock _systemClock;
         private readonly ICqrsEntityChangedSender _entityChangedSender;
-        private readonly IMeteorClient _meteorClient;
+        private readonly IMeteorService _meteorService;
 
         public PriceAlertsService(IPriceAlertsCache priceAlertsCache,
             IProductsCache productsCache,
             ISystemClock systemClock,
             ICqrsEntityChangedSender entityChangedSender,
-            IMeteorClient meteorClient,
+            IMeteorService meteorService,
             ILogger<PriceAlertsService> logger) 
 
         {
@@ -35,7 +35,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
             _productsCache = productsCache;
             _systemClock = systemClock;
             _entityChangedSender = entityChangedSender;
-            _meteorClient = meteorClient;
+            _meteorService = meteorService;
             _logger = logger;
         }
 
@@ -168,33 +168,7 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
                         PriceAlertChangedEvent>(cachedAlert,
                         priceAlert, context);
 
-                var product = _productsCache.Get(priceAlert.ProductId);
-
-                var list = new List<string>
-                {
-                    product.Name,
-                    priceAlert.Price.ToString(), // TODO: format like for activities
-                    product.TradingCurrency,
-                    priceAlert.PriceType.ToString(),
-                    priceAlert.Direction.ToString(),
-                    priceAlert.Comment
-                };
-                
-                var response = await _meteorClient.SendMessage(new SystemMessageRequestModel
-                {
-                    RequiresPopup = true,
-                    ExpirationTimestamp = DateTime.UtcNow.AddDays(1).Date, // TODO: check what expiration should be set here
-                    Recipients = priceAlert.AccountId,
-                    Event = MessageEventType.PriceAlertTriggered,
-                    IsImportant = true,
-                    LocalizationAttributes = list.ToArray()
-                });
-                
-                if (!response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    _logger.LogError($"Could not send message for price alert triggered. Price alert id: {priceAlert.Id}. Status code: {response.StatusCode}, response content: {content}");
-                }
+                await _meteorService.SendPriceAlertTriggered(priceAlert);
             }
 
             return result;
