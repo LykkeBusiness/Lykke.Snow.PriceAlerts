@@ -1,4 +1,5 @@
 using System;
+using Lykke.Snow.Common.Extensions;
 using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.SqlRepositories.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +19,20 @@ namespace Lykke.Snow.PriceAlerts.SqlRepositories.EntityConfigurations
             builder.Property(x => x.Direction).IsRequired();
             builder.Property(x => x.Status).IsRequired();
             builder.Property(x => x.AccountId).IsRequired();
-            builder.Property(x => x.CreatedOn).IsRequired();
-            builder.Property(x => x.ModifiedOn).IsRequired();
+
+            builder.Property(x => x.CreatedOn)
+                .IsRequired()
+                .HasConversion((x) => x.AssumeUtcIfUnspecified(),
+                    (x) => x.AssumeUtcIfUnspecified());
+            builder.Property(x => x.ModifiedOn)
+                .IsRequired()
+                .HasConversion((x) => x.AssumeUtcIfUnspecified(),
+                    (x) => x.AssumeUtcIfUnspecified());
+
+            builder.Property(x => x.Validity)
+                .HasConversion(x => x.HasValue ? x.Value.AssumeUtcIfUnspecified() : x,
+                    x => x.HasValue ? x.Value.AssumeUtcIfUnspecified() : x);
+
             builder.Property(x => x.PriceType).IsRequired();
             builder.Property(x => x.ProductId).IsRequired();
 
