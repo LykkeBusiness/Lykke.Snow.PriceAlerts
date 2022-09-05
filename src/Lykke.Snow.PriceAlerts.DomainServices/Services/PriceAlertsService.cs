@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
 using Lykke.Snow.Common.Extensions;
 using Lykke.Snow.Common.Model;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
@@ -87,12 +86,6 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
         {
             var isActive = _priceAlertsCache.IsActive(priceAlert.Id, out var cachedAlert);
             if (!isActive) return new Result<PriceAlertErrorCodes>(PriceAlertErrorCodes.DoesNotExist);
-            
-            _logger.LogInformation("Method {Method}, request {Request}, cached {Cached}",
-                nameof(UpdateAsync),
-                priceAlert.ToJson(),
-                cachedAlert.ToJson()
-            );
 
             priceAlert.Id = cachedAlert.Id;
             priceAlert.CreatedOn = cachedAlert.CreatedOn;
@@ -120,11 +113,6 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Services
 
 
             priceAlert.ModifiedOn = _systemClock.UtcNow();
-            
-            _logger.LogInformation("Method {Method}, beforeUpdate {Before}",
-                nameof(UpdateAsync),
-                priceAlert.ToJson()
-            );
             var result = await _priceAlertsCache.UpdateAsync(priceAlert);
 
             if (result.IsSuccess)
