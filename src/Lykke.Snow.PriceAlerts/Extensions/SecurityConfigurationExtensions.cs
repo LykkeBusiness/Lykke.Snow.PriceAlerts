@@ -3,6 +3,7 @@ using IdentityModel.Client;
 using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Common.Startup.Authorization;
 using Lykke.Snow.PriceAlerts.Settings;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -43,15 +44,23 @@ namespace Lykke.Snow.PriceAlerts.Extensions
             services.AddSingleton<HttpMessageHandler>(provider => provider.GetService<AccessTokenDelegatingHandler>());
         }
 
-        public static void AddDelegatingHandler(this IServiceCollection services, OidcSettings settings)
+        public static void AddDelegatingHandler(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDelegatingHandler(settings.ApiAuthority,
-                settings.ClientId,
-                settings.ClientSecret,
-                settings.ClientScope,
-                settings.RenewTokenTimeoutSec,
-                settings.ValidateIssuerName,
-                settings.RequireHttps);
+            var authority = configuration.GetValue<string>("Api-Authority");
+            var clientId = configuration.GetValue<string>("Client-Id");
+            var clientSecret = configuration.GetValue<string>("Client-Secret");
+            var clientScope = configuration.GetValue<string>("Client-Scope");
+            var validateIssuerName = configuration.GetValue<bool>("Validate-Issuer-Name");
+            var requireHttps = configuration.GetValue<bool>("Require-Https");
+            var renewTokenTimeoutSec = configuration.GetValue<int>("Renew-Token-Timeout-Sec");
+            
+            services.AddDelegatingHandler(authority,
+                clientId,
+                clientSecret,
+                clientScope,
+                renewTokenTimeoutSec,
+                validateIssuerName,
+                requireHttps);
         }
     }
 }
