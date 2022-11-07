@@ -70,6 +70,8 @@ namespace Lykke.Snow.PriceAlerts
                     .AddEnvironmentVariables()
                     .AddEnvironmentSecrets<Program>(EnvironmentSecretConfig)
                     .Build();
+                
+                configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
 
                 // Lykke settings manager for using settings service
                 var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
