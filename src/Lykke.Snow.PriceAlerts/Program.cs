@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -52,15 +53,27 @@ namespace Lykke.Snow.PriceAlerts
                 .WriteTo.File("logs/service.start.log")
                 .CreateBootstrapLogger();
 
-            try
+            var restartAttemptsLeft = int.TryParse(Environment.GetEnvironmentVariable("RESTART_ATTEMPTS_NUMBER"),
+                out var restartAttemptsFromEnv)
+                ? restartAttemptsFromEnv
+                : int.MaxValue;
+            var restartAttemptsInterval = int.TryParse(
+                Environment.GetEnvironmentVariable("RESTART_ATTEMPTS_INTERVAL_MS"),
+                out var restartAttemptsIntervalFromEnv)
+                ? restartAttemptsIntervalFromEnv
+                : 10000;
+            while (restartAttemptsLeft > 0)
             {
-                Log.Information("{Name} version {Version}", Assembly.GetEntryAssembly().GetName().Name,
-                    Assembly.GetEntryAssembly().GetName().Version.ToString());
-                Log.Information("ENV_INFO: {EnvInfo}", Environment.GetEnvironmentVariable("ENV_INFO"));
+                try
+                {
+                    Log.Information("{Name} version {Version}", Assembly.GetEntryAssembly().GetName().Name,
+                        Assembly.GetEntryAssembly().GetName().Version.ToString());
+                    Log.Information("ENV_INFO: {EnvInfo}", Environment.GetEnvironmentVariable("ENV_INFO"));
 
-                var builder = WebApplication.CreateBuilder(args);
+                    var builder = WebApplication.CreateBuilder(args);
 
-                builder.Environment.ContentRootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    builder.Environment.ContentRootPath =
+                        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
                 var configuration = builder.Configuration
                     .SetBasePath(builder.Environment.ContentRootPath)
@@ -73,111 +86,117 @@ namespace Lykke.Snow.PriceAlerts
                 
                 configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
 
-                // Lykke settings manager for using settings service
-                var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
+                    // Lykke settings manager for using settings service
+                    var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
 
-                builder.Services.AddSingleton(settingsManager.CurrentValue);
-                builder.Services.AddSingleton(settingsManager.CurrentValue.PriceAlerts.Cqrs.ContextNames);
-                // Add services to the container.
-                builder.Services
-                    .AddApplicationInsightsTelemetry()
-                    .AddMvcCore()
-                    .AddNewtonsoftJson(options =>
-                    {
-                        options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                        options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    })
-                    .AddApiExplorer();
-
-                builder.Services.AddHostedService<PriceAlertsEngine>();
-
-                builder.Services.AddHealthChecks();
-
-                builder.Services.AddControllers();
-
-                builder.Services.AddApiKeyAuth(settingsManager.CurrentValue.PriceAlerts?.PriceAlertsClient);
-
-                builder.Services.AddAuthorization();
-
-                builder.Services.AddSwaggerGen(options =>
-                    {
-                        options.SwaggerDoc(
-                            "v1",
-                            new OpenApiInfo {Version = "v1", Title = $"{ApiName}"});
-
-                        if (!string.IsNullOrWhiteSpace(settingsManager.CurrentValue.PriceAlerts.PriceAlertsClient?.ApiKey))
+                    builder.Services.AddSingleton(settingsManager.CurrentValue);
+                    builder.Services.AddSingleton(settingsManager.CurrentValue.PriceAlerts.Cqrs.ContextNames);
+                    // Add services to the container.
+                    builder.Services
+                        .AddApplicationInsightsTelemetry()
+                        .AddMvcCore()
+                        .AddNewtonsoftJson(options =>
                         {
-                            options.AddApiKeyAwareness();
-                        }
-                    })
-                    .AddSwaggerGenNewtonsoftSupport();
+                            options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                            options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                        })
+                        .AddApiExplorer();
 
-                builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
+                    builder.Services.AddHostedService<PriceAlertsEngine>();
 
-                var settings = settingsManager.CurrentValue.PriceAlerts;
-                builder.Services.AddDelegatingHandler(configuration);
-                
-                builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());
-                
-                builder.Services.AddMeteorClient();
-                
-                builder.Host
-                    .UseServiceProviderFactory(new AutofacServiceProviderFactory())
-                    .ConfigureContainer<ContainerBuilder>((ctx, cBuilder) =>
-                    {
-                        // register Autofac modules here
-                        cBuilder.RegisterModule(new ServiceModule(settings.MeteorMessageExpiration));
-                        if (!ctx.HostingEnvironment.IsEnvironment("test"))
+                    builder.Services.AddHealthChecks();
+
+                    builder.Services.AddControllers();
+
+                    builder.Services.AddApiKeyAuth(settingsManager.CurrentValue.PriceAlerts?.PriceAlertsClient);
+
+                    builder.Services.AddAuthorization();
+
+                    builder.Services.AddSwaggerGen(options =>
                         {
-                            cBuilder.RegisterModule(
-                                new DataModule(settingsManager.CurrentValue.PriceAlerts.Db.ConnectionString));
-                            cBuilder.RegisterModule(new CqrsModule(settingsManager.CurrentValue.PriceAlerts.Cqrs));
-                            cBuilder.RegisterModule(new ClientsModule(settingsManager.CurrentValue));
-                        }
-                    })
-                    .UseSerilog((_, cfg) => cfg.ReadFrom.Configuration(configuration));
+                            options.SwaggerDoc(
+                                "v1",
+                                new OpenApiInfo {Version = "v1", Title = $"{ApiName}"});
 
-                var app = builder.Build();
+                            if (!string.IsNullOrWhiteSpace(settingsManager.CurrentValue.PriceAlerts.PriceAlertsClient
+                                    ?.ApiKey))
+                            {
+                                options.AddApiKeyAwareness();
+                            }
+                        })
+                        .AddSwaggerGenNewtonsoftSupport();
 
-                if (app.Environment.IsDevelopment())
-                    app.UseDeveloperExceptionPage();
-                else
-                    app.UseHsts();
+                    builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
 
-                app.UseMiddleware<ExceptionHandlerMiddleware>();
+                    var settings = settingsManager.CurrentValue.PriceAlerts;
+                    builder.Services.AddDelegatingHandler(settings.OidcSettings);
 
-                app.UseSwagger();
-                app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName));
+                    builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());
 
-                app.UseAuthentication();
-                app.UseAuthorization();
+                    builder.Services.AddMeteorClient();
 
-                app.MapControllers();
-                app.MapHealthChecks("/healthz");
+                    builder.Host
+                        .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                        .ConfigureContainer<ContainerBuilder>((ctx, cBuilder) =>
+                        {
+                            // register Autofac modules here
+                            cBuilder.RegisterModule(new ServiceModule(settings.MeteorMessageExpiration));
+                            if (!ctx.HostingEnvironment.IsEnvironment("test"))
+                            {
+                                cBuilder.RegisterModule(
+                                    new DataModule(settingsManager.CurrentValue.PriceAlerts.Db.ConnectionString));
+                                cBuilder.RegisterModule(new CqrsModule(settingsManager.CurrentValue.PriceAlerts.Cqrs));
+                                cBuilder.RegisterModule(new ClientsModule(settingsManager.CurrentValue));
+                            }
+                        })
+                        .UseSerilog((_, cfg) => cfg.ReadFrom.Configuration(configuration));
 
-                var startupManager = app.Services.GetRequiredService<StartupManager>();
-                await startupManager.Start();
-                await app.RunAsync();
+                    var app = builder.Build();
+
+                    if (app.Environment.IsDevelopment())
+                        app.UseDeveloperExceptionPage();
+                    else
+                        app.UseHsts();
+
+                    app.UseMiddleware<ExceptionHandlerMiddleware>();
+
+                    app.UseSwagger();
+                    app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName));
+
+                    app.UseAuthentication();
+                    app.UseAuthorization();
+
+                    app.MapControllers();
+                    app.MapHealthChecks("/healthz");
+
+                    var startupManager = app.Services.GetRequiredService<StartupManager>();
+                    await startupManager.Start();
+
+
+                    await app.RunAsync();
+                }
+                catch (Exception e)
+                {
+                    Log.Fatal(e,
+                        "Host terminated unexpectedly. Restart in {RestartAttemptsInterval} seconds. Attempts left: {RestartAttemptsLeft}",
+                        restartAttemptsInterval, restartAttemptsLeft);
+                    restartAttemptsLeft--;
+                    Thread.Sleep(restartAttemptsInterval);
+                }
             }
-            catch (Exception e)
-            {
-                Log.Fatal(e, "Host terminated unexpectedly");
 
-                // Lets devops to see startup error in console between restarts in the Kubernetes
-                var delay = TimeSpan.FromMinutes(1);
+            // Lets devops to see startup error in console between restarts in the Kubernetes
+            var delay = TimeSpan.FromMinutes(1);
 
-                Log.Information("Process will be terminated in {Delay}. Press any key to terminate immediately", delay);
+            Log.Information("Process will be terminated in {Delay}. Press any key to terminate immediately", delay);
 
-                await Task.WhenAny(
-                    Task.Delay(delay),
-                    Task.Run(() => Console.ReadKey(true)));
+            await Task.WhenAny(
+                Task.Delay(delay),
+                Task.Run(() => Console.ReadKey(true)));
 
-                Log.Information("Terminated");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
+            Log.Information("Terminated");
+
+            Log.CloseAndFlush();
         }
     }
 }
