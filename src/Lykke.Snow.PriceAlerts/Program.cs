@@ -129,7 +129,7 @@ namespace Lykke.Snow.PriceAlerts
                     builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
 
                     var settings = settingsManager.CurrentValue.PriceAlerts;
-                    builder.Services.AddDelegatingHandler(settings.OidcSettings);
+                    builder.Services.AddDelegatingHandler(configuration);
 
                     builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());
 
