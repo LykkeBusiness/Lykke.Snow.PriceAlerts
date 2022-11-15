@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -32,6 +33,18 @@ namespace Lykke.Snow.PriceAlerts
     internal sealed class Program
     {
         private static readonly string ApiName = "PriceAlerts";
+        
+        private static readonly List<(string, string, string)> EnvironmentSecretConfig = new List<(string, string, string)>
+        {
+            /* secrets.json Key                               // Environment Variable               // default value (optional) */
+            ("Api-Authority",                    "API_AUTHORITY",                      null),
+            ("Client-Id",                        "CLIENT_ID",                          null),
+            ("Client-Secret",                    "CLIENT_SECRET",                      null),
+            ("Client-Scope",                     "CLIENT_SCOPE",                       null),
+            ("Validate-Issuer-Name",             "VALIDATE_ISSUER_NAME",               null),
+            ("Require-Https",                    "REQUIRE_HTTPS",                      null),
+            ("Renew-Token-Timeout-Sec",          "RENEW_TOKEN_TIMEOUT_SEC",            null),
+        };
 
         public static async Task Main(string[] args)
         {
@@ -62,13 +75,16 @@ namespace Lykke.Snow.PriceAlerts
                     builder.Environment.ContentRootPath =
                         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                    var configuration = builder.Configuration
-                        .SetBasePath(builder.Environment.ContentRootPath)
-                        .AddJsonFile("appsettings.json", true)
-                        .AddSerilogJson(builder.Environment)
-                        .AddUserSecrets<Program>()
-                        .AddEnvironmentVariables()
-                        .Build();
+                var configuration = builder.Configuration
+                    .SetBasePath(builder.Environment.ContentRootPath)
+                    .AddJsonFile("appsettings.json", true)
+                    .AddSerilogJson(builder.Environment)
+                    .AddUserSecrets<Program>()
+                    .AddEnvironmentVariables()
+                    .AddEnvironmentSecrets<Program>(EnvironmentSecretConfig)
+                    .Build();
+                
+                configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
 
                     // Lykke settings manager for using settings service
                     var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
@@ -113,7 +129,7 @@ namespace Lykke.Snow.PriceAlerts
                     builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
 
                     var settings = settingsManager.CurrentValue.PriceAlerts;
-                    builder.Services.AddDelegatingHandler(settings.OidcSettings);
+                    builder.Services.AddDelegatingHandler(configuration);
 
                     builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());
 

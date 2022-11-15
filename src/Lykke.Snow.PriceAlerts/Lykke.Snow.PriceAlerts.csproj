@@ -8,6 +8,7 @@
           Link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
         -->
     <WarningsAsErrors>8597,8600,8601,8602,8603,8604,8605,8607,8608,8609,8610,8611,8612,8613,8614,8615,8616,8617,8618,8619,8620,8621,8622,8624,8625,8629,8631,8633,8634,8643,8644,8645,8655,8667,8670,8714,8762,8763,8764,8765,8766,8767,8768,8769,8770,8774,8775,8776,8777,8819,8824,8825,8847</WarningsAsErrors>
+    <UserSecretsId>f7815dc0-f116-4480-a225-f06b40245396</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
         <None Update="Dockerfile">
@@ -53,23 +54,5 @@
     <None Update="Dockerfile">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj" />
-    <ProjectReference Include="..\Lykke.Snow.PriceAlerts.DomainServices\Lykke.Snow.PriceAlerts.DomainServices.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Lykke.SettingsReader" Version="5.3.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
-    <PackageReference Include="Lykke.Middlewares" Version="3.5.1" />
-    <PackageReference Include="Lykke.Logs.Serilog" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers" />
-    <Folder Include="HealthChecks" />
   </ItemGroup>
 </Project>
