@@ -16,7 +16,6 @@
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\client\Lykke.Snow.PriceAlerts.Client\Lykke.Snow.PriceAlerts.Client.csproj" />
         <ProjectReference Include="..\..\src\Lykke.Snow.PriceAlerts\Lykke.Snow.PriceAlerts.csproj" />
         <ProjectReference Include="..\..\src\Lykke.Snow.PriceAlerts.DomainServices\Lykke.Snow.PriceAlerts.DomainServices.csproj" />
     </ItemGroup>
