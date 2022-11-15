@@ -162,7 +162,7 @@ namespace Lykke.Snow.PriceAlerts
                 catch (Exception e)
                 {
                     Log.Fatal(e,
-                        "Host terminated unexpectedly. Restart in {RestartAttemptsInterval} seconds. Attempts left: {RestartAttemptsLeft}",
+                        "Host terminated unexpectedly. Restart in {RestartAttemptsInterval} ms. Attempts left: {RestartAttemptsLeft}",
                         restartAttemptsInterval, restartAttemptsLeft);
                     restartAttemptsLeft--;
                     Thread.Sleep(restartAttemptsInterval);
