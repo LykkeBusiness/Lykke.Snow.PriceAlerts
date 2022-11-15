@@ -22,7 +22,4 @@
         <PackageReference Include="System.Reactive" Version="5.0.0" />
         <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
     </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj" />
-  </ItemGroup>
 </Project>
