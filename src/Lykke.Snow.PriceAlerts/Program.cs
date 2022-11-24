@@ -49,6 +49,7 @@ namespace Lykke.Snow.PriceAlerts
         public static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .WriteTo.File("logs/service.start.log")
                 .CreateBootstrapLogger();
@@ -77,12 +78,15 @@ namespace Lykke.Snow.PriceAlerts
 
                 var configuration = builder.Configuration
                     .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true)
+                    .AddJsonFile("appsettings.json")
                     .AddSerilogJson(builder.Environment)
                     .AddUserSecrets<Program>()
                     .AddEnvironmentVariables()
                     .AddEnvironmentSecrets<Program>(EnvironmentSecretConfig)
                     .Build();
+
+                var debugView = configuration.GetDebugView();
+                Log.Logger.Debug(debugView);
                 
                 configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
 
