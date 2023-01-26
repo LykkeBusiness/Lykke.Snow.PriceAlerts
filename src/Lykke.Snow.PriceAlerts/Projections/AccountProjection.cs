@@ -44,14 +44,14 @@ namespace Lykke.Snow.PriceAlerts.Projections
                 case AccountChangedEventTypeContract.BalanceUpdated:
                     break;
                 case AccountChangedEventTypeContract.Deleted:
-                    await HandleDeleted(e);
+                    HandleDeleted(e);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private async Task HandleDeleted(AccountChangedEvent e)
+        private void HandleDeleted(AccountChangedEvent e)
         {
             var accountId = e.Account.Id;
             _logger.LogInformation("Cancelling all alerts for deleted account {AccountId}",

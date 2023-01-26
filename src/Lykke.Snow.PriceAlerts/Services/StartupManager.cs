@@ -41,13 +41,13 @@ namespace Lykke.Snow.PriceAlerts.Services
             await _priceAlertsCache.Init();
             await _quoteCache.Init();
 
-            await StartRabbitMqServices();
+            StartRabbitMqServices();
             
             _cqrsEngine.StartPublishers();
             _cqrsEngine.StartSubscribers();
         }
 
-        private async Task StartRabbitMqServices()
+        private void StartRabbitMqServices()
         {
             _rabbitMqService.Subscribe(_appSettings.PriceAlerts.RabbitMq.Consumers.QuotesRabbitMqSettings,
                 false,

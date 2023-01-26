@@ -31,30 +31,30 @@ namespace Lykke.Snow.PriceAlerts.Projections
         }
 
         [UsedImplicitly]
-        public async Task Handle(ProductChangedEvent @event)
+        public void Handle(ProductChangedEvent @event)
         {
             switch (@event.ChangeType)
             {
                 case ChangeType.Creation:
                 case ChangeType.Edition:
-                    await HandleEdition(@event);
+                    HandleEdition(@event);
                     break;
                 case ChangeType.Deletion:
-                    await HandleDeletion(@event);
+                    HandleDeletion(@event);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private async Task HandleDeletion(ProductChangedEvent @event)
+        private void HandleDeletion(ProductChangedEvent @event)
         {
             var productId = @event.OldValue.ProductId;
             _logger.LogWarning("Product {Id} is deleted. Cancelling all alerts", productId);
             Remove(productId);
         }
 
-        private async Task HandleEdition(ProductChangedEvent @event)
+        private void HandleEdition(ProductChangedEvent @event)
         {
             var newProduct = @event.NewValue;
             if (newProduct.IsDiscontinued || !newProduct.IsStarted)
