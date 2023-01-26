@@ -8,7 +8,6 @@ using Lykke.Cqrs.Configuration.Routing;
 using Lykke.Cqrs.Middleware.Logging;
 using Lykke.Messaging.Serialization;
 using Lykke.Snow.Common.Correlation.Cqrs;
-using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Cqrs;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Projections;
@@ -65,8 +64,9 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
             };
 
-            var log = new LykkeLoggerAdapter<CqrsModule>(ctx.Resolve<ILogger<CqrsModule>>());
-            var engine = new RabbitMqCqrsEngine(log,
+            var loggerFactory = ctx.Resolve<ILoggerFactory>();
+            
+            var engine = new RabbitMqCqrsEngine(loggerFactory,
                 ctx.Resolve<IDependencyResolver>(),
                 new DefaultEndpointProvider(),
                 rabbitMqSettings.Endpoint.ToString(),
@@ -76,8 +76,8 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterDefaultRouting(),
                 RegisterContext(),
-                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(log)),
-                Register.EventInterceptors(new DefaultEventLoggingInterceptor(log)));
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(loggerFactory)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(loggerFactory)));
 
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
