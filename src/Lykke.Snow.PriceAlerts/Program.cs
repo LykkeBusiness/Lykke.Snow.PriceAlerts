@@ -75,16 +75,17 @@ namespace Lykke.Snow.PriceAlerts
                     builder.Environment.ContentRootPath =
                         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                var configuration = builder.Configuration
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true)
-                    .AddSerilogJson(builder.Environment)
-                    .AddUserSecrets<Program>()
-                    .AddEnvironmentVariables()
-                    .AddEnvironmentSecrets<Program>(EnvironmentSecretConfig)
-                    .Build();
-                
-                configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
+                    var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                    var configuration = builder.Configuration
+                        .SetBasePath(builder.Environment.ContentRootPath)
+                        .AddJsonFile("appsettings.json")
+                        .AddJsonFile($"appsettings.Custom.json", optional: true)
+                        .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+                        .AddSerilogJson(builder.Environment)
+                        .AddEnvironmentSecrets<Program>(EnvironmentSecretConfig)
+                        .Build();
+
+                    configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
 
                     // Lykke settings manager for using settings service
                     var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
@@ -116,7 +117,7 @@ namespace Lykke.Snow.PriceAlerts
                         {
                             options.SwaggerDoc(
                                 "v1",
-                                new OpenApiInfo {Version = "v1", Title = $"{ApiName}"});
+                                new OpenApiInfo { Version = "v1", Title = $"{ApiName}" });
 
                             if (!string.IsNullOrWhiteSpace(settingsManager.CurrentValue.PriceAlerts.PriceAlertsClient
                                     ?.ApiKey))
