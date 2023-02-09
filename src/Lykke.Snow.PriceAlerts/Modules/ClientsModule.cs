@@ -9,18 +9,18 @@ namespace Lykke.Snow.PriceAlerts.Modules
 {
     public class ClientsModule : Module
     {
-        private readonly AppSettings _appSettings;
+        private readonly PriceAlertsSettings _settings;
 
-        public ClientsModule(AppSettings appSettings)
+        public ClientsModule(PriceAlertsSettings settings)
         {
-            _appSettings = appSettings;
+            _settings = settings;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            RegisterClientWithName<IProductsApi>(builder, "Asset", _appSettings.PriceAlerts.AssetService);
-            RegisterClientWithName<ITradingInstrumentsApi>(builder, "Asset", _appSettings.PriceAlerts.AssetService);
-            RegisterClientWithName<IPricesApi>(builder, "MT Core", _appSettings.PriceAlerts.TradingCore);
+            RegisterClientWithName<IProductsApi>(builder, "Asset", _settings.AssetService);
+            RegisterClientWithName<ITradingInstrumentsApi>(builder, "Asset", _settings.AssetService);
+            RegisterClientWithName<IPricesApi>(builder, "MT Core", _settings.TradingCore);
             
         }
 

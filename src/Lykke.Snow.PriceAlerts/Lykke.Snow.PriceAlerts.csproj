@@ -30,7 +30,7 @@
         <PackageReference Include="Lykke.Snow.Common.Startup" Version="3.0.1" />
         <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="4.5.5" />
         <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="11.3.0" />
-        <PackageReference Include="LykkeBiz.SettingsReader" Version="7.0.0" />
+        <PackageReference Include="LykkeBiz.SettingsReader" Version="7.1.0" />
         <PackageReference Include="LykkeBiz.Snow.Cqrs" Version="2.1.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
         <PackageReference Include="Lykke.Middlewares" Version="3.5.1" />
