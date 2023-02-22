@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lykke.Snow.Common;
 using Lykke.Snow.Contracts.Responses;
 using Lykke.Snow.PriceAlerts.Contract.Api;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
@@ -119,8 +120,10 @@ namespace Lykke.Snow.PriceAlerts.Controllers
         public async Task<GetPriceAlertsResponse> GetByAccountIdAsync([FromRoute] [Required] string accountId,
             [FromQuery] GetPriceAlertsRequest request)
         {
-            var skip = request.Skip ?? 0;
-            var take = Math.Min(request.Take ?? DefaultTake, MaxTake);
+            var skip = request.Skip ?? PaginationUtils.DefaultSkip;
+            var take = request.Take ?? PaginationUtils.DefaultTake;
+
+            (skip, take) = PaginationUtils.ValidateSkipAndTake(skip, take);
 
             var result =
                 await _priceAlertsService.GetByPageAsync(accountId, request.ProductId,
