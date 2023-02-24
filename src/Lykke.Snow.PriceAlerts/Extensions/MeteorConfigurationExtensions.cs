@@ -15,9 +15,9 @@ namespace Lykke.Snow.PriceAlerts.Extensions
             var serviceProvider = services.BuildServiceProvider();
             services.AddSingleton(provider =>
             {
-                var appSettings = serviceProvider.GetService<AppSettings>();
+                var settings = serviceProvider.GetService<PriceAlertsSettings>();
                 return LykkeHttpClientGenerator
-                    .BuildForUrl(appSettings.PriceAlerts.MeteorService.Url)
+                    .BuildForUrl(settings.MeteorService.Url)
                     .WithServiceName<HttpErrorResponse>("Meteor Service")
                     .WithAdditionalDelegatingHandler(serviceProvider.GetService<AccessTokenDelegatingHandler>())
                     .WithAdditionalDelegatingHandler(

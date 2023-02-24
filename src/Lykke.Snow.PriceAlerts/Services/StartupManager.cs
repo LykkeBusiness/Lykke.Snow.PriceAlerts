@@ -14,7 +14,7 @@ namespace Lykke.Snow.PriceAlerts.Services
         private readonly IRabbitMqService _rabbitMqService;
         private readonly IQuoteCache _quoteCache;
         private readonly IMapper _mapper;
-        private readonly AppSettings _appSettings;
+        private readonly PriceAlertsSettings _settings;
         private readonly IProductsCache _productsCache;
         private readonly ICqrsEngine _cqrsEngine;
 
@@ -23,7 +23,7 @@ namespace Lykke.Snow.PriceAlerts.Services
             IRabbitMqService rabbitMqService,
             IQuoteCache quoteCache,
             IMapper mapper,
-            AppSettings appSettings,
+            PriceAlertsSettings settings,
             ICqrsEngine cqrsEngine)
         {
             _productsCache = productsCache;
@@ -31,7 +31,7 @@ namespace Lykke.Snow.PriceAlerts.Services
             _rabbitMqService = rabbitMqService;
             _quoteCache = quoteCache;
             _mapper = mapper;
-            _appSettings = appSettings;
+            _settings = settings;
             _cqrsEngine = cqrsEngine;
         }
 
@@ -49,7 +49,7 @@ namespace Lykke.Snow.PriceAlerts.Services
 
         private void StartRabbitMqServices()
         {
-            _rabbitMqService.Subscribe(_appSettings.PriceAlerts.RabbitMq.Consumers.QuotesRabbitMqSettings,
+            _rabbitMqService.Subscribe(_settings.RabbitMq.Consumers.QuotesRabbitMqSettings,
                 false,
                 quote => _quoteCache.AddOrUpdate(
                     _mapper.Map<BidAskPairRabbitMqContract, QuoteCacheModel>(quote)),

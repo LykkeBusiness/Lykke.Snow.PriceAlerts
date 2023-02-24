@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -34,18 +33,6 @@ namespace Lykke.Snow.PriceAlerts
     {
         private static readonly string ApiName = "PriceAlerts";
         
-        private static readonly List<(string, string, string)> EnvironmentSecretConfig = new List<(string, string, string)>
-        {
-            /* secrets.json Key                               // Environment Variable               // default value (optional) */
-            ("Api-Authority",                    "API_AUTHORITY",                      null),
-            ("Client-Id",                        "CLIENT_ID",                          null),
-            ("Client-Secret",                    "CLIENT_SECRET",                      null),
-            ("Client-Scope",                     "CLIENT_SCOPE",                       null),
-            ("Validate-Issuer-Name",             "VALIDATE_ISSUER_NAME",               null),
-            ("Require-Https",                    "REQUIRE_HTTPS",                      null),
-            ("Renew-Token-Timeout-Sec",          "RENEW_TOKEN_TIMEOUT_SEC",            null),
-        };
-
         public static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
@@ -75,23 +62,20 @@ namespace Lykke.Snow.PriceAlerts
                     builder.Environment.ContentRootPath =
                         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                var configuration = builder.Configuration
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true)
-                    .AddSerilogJson(builder.Environment)
-                    .AddUserSecrets<Program>()
-                    .AddEnvironmentVariables()
-                    .AddEnvironmentSecrets<Program>(EnvironmentSecretConfig)
-                    .Build();
-                
-                configuration.ValidateEnvironmentSecrets(EnvironmentSecretConfig, Log.Logger);
+                    // for serilog configuration and environment variables (e.g. SettingsUrl, etc.)
+                    var configuration = builder.Configuration
+                        .SetBasePath(builder.Environment.ContentRootPath)
+                        .AddSerilogJson(builder.Environment)
+                        .AddEnvironmentVariables()
+                        .Build();
 
-                    // Lykke settings manager for using settings service
+                    // for the rest of the settings
                     var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
+                    var settings = settingsManager.CurrentValue.PriceAlerts ??
+                                   throw new ArgumentException("PriceAlerts settings not found");
 
-                    builder.Services.AddSingleton(settingsManager.CurrentValue);
-                    builder.Services.AddSingleton(settingsManager.CurrentValue.PriceAlerts.Cqrs.ContextNames);
-                    // Add services to the container.
+                    builder.Services.AddSingleton(settings);
+                    builder.Services.AddSingleton(settings.Cqrs.ContextNames);
                     builder.Services
                         .AddApplicationInsightsTelemetry()
                         .AddMvcCore()
@@ -108,7 +92,7 @@ namespace Lykke.Snow.PriceAlerts
 
                     builder.Services.AddControllers();
 
-                    builder.Services.AddApiKeyAuth(settingsManager.CurrentValue.PriceAlerts?.PriceAlertsClient);
+                    builder.Services.AddApiKeyAuth(settings.PriceAlertsClient);
 
                     builder.Services.AddAuthorization();
 
@@ -116,10 +100,9 @@ namespace Lykke.Snow.PriceAlerts
                         {
                             options.SwaggerDoc(
                                 "v1",
-                                new OpenApiInfo {Version = "v1", Title = $"{ApiName}"});
+                                new OpenApiInfo { Version = "v1", Title = $"{ApiName}" });
 
-                            if (!string.IsNullOrWhiteSpace(settingsManager.CurrentValue.PriceAlerts.PriceAlertsClient
-                                    ?.ApiKey))
+                            if (!string.IsNullOrWhiteSpace(settings.PriceAlertsClient?.ApiKey))
                             {
                                 options.AddApiKeyAwareness();
                             }
@@ -127,9 +110,8 @@ namespace Lykke.Snow.PriceAlerts
                         .AddSwaggerGenNewtonsoftSupport();
 
                     builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
-
-                    var settings = settingsManager.CurrentValue.PriceAlerts;
-                    builder.Services.AddDelegatingHandler(configuration);
+                    
+                    builder.Services.AddDelegatingHandler(settings.OidcSettings);
 
                     builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());
 
@@ -144,9 +126,9 @@ namespace Lykke.Snow.PriceAlerts
                             if (!ctx.HostingEnvironment.IsEnvironment("test"))
                             {
                                 cBuilder.RegisterModule(
-                                    new DataModule(settingsManager.CurrentValue.PriceAlerts.Db.ConnectionString));
-                                cBuilder.RegisterModule(new CqrsModule(settingsManager.CurrentValue.PriceAlerts.Cqrs));
-                                cBuilder.RegisterModule(new ClientsModule(settingsManager.CurrentValue));
+                                    new DataModule(settings.Db.ConnectionString));
+                                cBuilder.RegisterModule(new CqrsModule(settings.Cqrs));
+                                cBuilder.RegisterModule(new ClientsModule(settings));
                             }
                         })
                         .UseSerilog((_, cfg) => cfg.ReadFrom.Configuration(configuration));
