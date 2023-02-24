@@ -49,8 +49,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
 
             builder.Register(CreateEngine)
                 .As<ICqrsEngine>()
-                .SingleInstance()
-                .AutoActivate();
+                .SingleInstance();
         }
 
         private CqrsEngine CreateEngine(IComponentContext ctx)
@@ -66,6 +65,7 @@ namespace Lykke.Snow.PriceAlerts.Modules
             };
 
             var loggerFactory = ctx.Resolve<ILoggerFactory>();
+            
             var engine = new RabbitMqCqrsEngine(loggerFactory,
                 ctx.Resolve<IDependencyResolver>(),
                 new DefaultEndpointProvider(),
@@ -82,8 +82,6 @@ namespace Lykke.Snow.PriceAlerts.Modules
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
             engine.SetReadHeadersAction(correlationManager.FetchCorrelationIfExists);
-            engine.StartPublishers();
-            engine.StartSubscribers();
 
             return engine;
         }

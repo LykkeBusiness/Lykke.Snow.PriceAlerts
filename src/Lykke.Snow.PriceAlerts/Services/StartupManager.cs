@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using AutoMapper;
+using Lykke.Cqrs;
 using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Lykke.Snow.PriceAlerts.ExternalContracts;
@@ -15,13 +16,15 @@ namespace Lykke.Snow.PriceAlerts.Services
         private readonly IMapper _mapper;
         private readonly PriceAlertsSettings _settings;
         private readonly IProductsCache _productsCache;
+        private readonly ICqrsEngine _cqrsEngine;
 
         public StartupManager(IProductsCache productsCache,
             IPriceAlertsCache priceAlertsCache,
             IRabbitMqService rabbitMqService,
             IQuoteCache quoteCache,
             IMapper mapper,
-            PriceAlertsSettings settings)
+            PriceAlertsSettings settings,
+            ICqrsEngine cqrsEngine)
         {
             _productsCache = productsCache;
             _priceAlertsCache = priceAlertsCache;
@@ -29,6 +32,7 @@ namespace Lykke.Snow.PriceAlerts.Services
             _quoteCache = quoteCache;
             _mapper = mapper;
             _settings = settings;
+            _cqrsEngine = cqrsEngine;
         }
 
         internal async Task Start()
@@ -37,10 +41,13 @@ namespace Lykke.Snow.PriceAlerts.Services
             await _priceAlertsCache.Init();
             await _quoteCache.Init();
 
-            await StartRabbitMqServices();
+            StartRabbitMqServices();
+            
+            _cqrsEngine.StartPublishers();
+            _cqrsEngine.StartSubscribers();
         }
 
-        private async Task StartRabbitMqServices()
+        private void StartRabbitMqServices()
         {
             _rabbitMqService.Subscribe(_settings.RabbitMq.Consumers.QuotesRabbitMqSettings,
                 false,
