@@ -11,7 +11,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="Lykke.Snow.Common" Version="1.52.0" />
+        <PackageReference Include="Lykke.Snow.Common" Version="1.56.0" />
         <PackageReference Include="Lykke.Snow.Contracts" Version="1.1.1" />
     </ItemGroup>
 </Project>
