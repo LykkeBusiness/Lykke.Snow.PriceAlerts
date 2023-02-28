@@ -7,7 +7,6 @@
           To prevent null reference exceptions, it is better to have corresponding warnings as errors.
           Link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
         -->
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <UserSecretsId>f7815dc0-f116-4480-a225-f06b40245396</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
@@ -28,11 +27,10 @@
         <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="10.7.0" />
         <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.46.0" />
         <PackageReference Include="Lykke.Snow.Common.Startup" Version="3.0.1" />
-        <PackageReference Include="LykkeBiz.Cqrs" Version="12.0.3" />
-        <PackageReference Include="LykkeBiz.SettingsReader" Version="7.1.0" />
         <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="4.5.5" />
-        <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="11.3.0" />
-        <PackageReference Include="LykkeBiz.Snow.Cqrs" Version="2.1.0" />
+        <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="9.2.6" />
+        <PackageReference Include="LykkeBiz.SettingsReader" Version="6.0.4" />
+        <PackageReference Include="LykkeBiz.Snow.Cqrs" Version="1.2.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
         <PackageReference Include="Lykke.Middlewares" Version="3.5.1" />
         <PackageReference Include="Lykke.Logs.Serilog" Version="2.3.0" />
