@@ -26,6 +26,7 @@
         <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="7.6.1" />
         <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="11.3.0" />
         <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.46.0" />
+        <PackageReference Include="Lykke.Snow.Common" Version="2.7.3" />
         <PackageReference Include="Lykke.Snow.Common.Startup" Version="3.0.1" />
         <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="4.5.5" />
         <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="9.2.6" />
