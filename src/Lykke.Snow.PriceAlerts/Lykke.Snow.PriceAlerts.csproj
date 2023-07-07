@@ -26,15 +26,15 @@
         <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="7.6.1" />
         <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="11.3.0" />
         <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.46.0" />
+        <PackageReference Include="Lykke.Snow.Common" Version="2.7.3" />
         <PackageReference Include="Lykke.Snow.Common.Startup" Version="3.0.1" />
         <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="4.5.5" />
         <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="9.2.6" />
         <PackageReference Include="LykkeBiz.SettingsReader" Version="6.0.4" />
         <PackageReference Include="LykkeBiz.Snow.Cqrs" Version="1.2.0" />
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
         <PackageReference Include="Lykke.Middlewares" Version="3.5.1" />
         <PackageReference Include="Lykke.Logs.Serilog" Version="2.3.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.2" />
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.2" />
