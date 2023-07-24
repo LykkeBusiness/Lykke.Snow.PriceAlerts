@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lykke.Contracts.Responses;
 using Lykke.Snow.Common;
-using Lykke.Snow.Contracts.Responses;
 using Lykke.Snow.PriceAlerts.Contract.Api;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Requests;

@@ -8,8 +8,6 @@ using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Services;
-using Meteor.Client;
-using Meteor.Client.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Lykke.Snow.PriceAlerts.DomainServices.Services
