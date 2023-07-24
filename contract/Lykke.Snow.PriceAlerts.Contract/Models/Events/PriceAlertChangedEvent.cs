@@ -1,4 +1,4 @@
-using Lykke.Snow.Contracts.Messaging;
+using Lykke.Contracts.Messaging;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using MessagePack;
 

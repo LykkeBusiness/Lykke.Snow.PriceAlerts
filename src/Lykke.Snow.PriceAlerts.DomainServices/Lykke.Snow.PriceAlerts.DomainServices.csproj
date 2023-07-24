@@ -15,9 +15,8 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="11.3.0" />
+        <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="11.6.0" />
         <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.46.0" />
-        <PackageReference Include="Lykke.Snow.Common" Version="2.7.3" />
         <PackageReference Include="Meteor.Client" Version="1.2.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />

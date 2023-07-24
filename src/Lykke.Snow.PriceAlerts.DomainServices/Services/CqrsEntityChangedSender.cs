@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lykke.Contracts.Messaging;
 using Lykke.Snow.Common.Correlation;
-using Lykke.Snow.Contracts.Messaging;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 
 namespace Lykke.Snow.PriceAlerts.DomainServices.Services
