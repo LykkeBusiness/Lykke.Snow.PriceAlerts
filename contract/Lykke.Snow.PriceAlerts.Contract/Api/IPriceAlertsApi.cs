@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Lykke.Snow.Contracts.Responses;
+using Lykke.Contracts.Responses;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Requests;
 using Lykke.Snow.PriceAlerts.Contract.Models.Responses;
