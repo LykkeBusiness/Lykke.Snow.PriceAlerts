@@ -1,3 +1,31 @@
+## 1.5.0 - Nova 2. Delivery 39 (January 30, 2024)
+### What's changed
+* LT-5146: Changelog.md for lykke.snow.pricealerts.
+* LT-4494: Read secrets from .json with hyphens.
+
+### Deployment
+
+User secrets will be read from .json configuration file. 
+
+OidcSettings section looks the following way:
+
+```json
+"OidcSettings": 
+    {
+      "Api-Authority": "http://bouncer.mt.svc.cluster.local:5005",
+      "Client-Id": "price_alerts_api",
+      "Client-Secret": "secret",
+      "Client-Scope": "meteor_api meteor_api:server",
+      "Validate-Issuer-Name": false,
+      "Require-Https": false,
+      "Renew-Token-Timeout-Sec": 1800
+    }
+```
+
+Hyphen-styled naming is optional. First of all Pascal-case-styled property (e.g. `ApiAuthority`) names will be checked. If not found, we'll fall back to hyphen-styled property names.
+
+
+
 ## 1.4.0 - Nova 2. Delivery 36 (2023-08-31)
 ### What's changed
 * LT-4896: Update nugets.
