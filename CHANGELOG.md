@@ -1,3 +1,11 @@
+## 1.6.0 - Nova 2. Delivery 40 (February 28, 2024)
+### What's changed
+* LT-5281: Step: deprecated packages validation is failed.
+* LT-5254: Update lykke.httpclientgenerator to 5.6.2.
+
+
+
+
 ## 1.5.0 - Nova 2. Delivery 39 (January 30, 2024)
 ### What's changed
 * LT-5146: Changelog.md for lykke.snow.pricealerts.
