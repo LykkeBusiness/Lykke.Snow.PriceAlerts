@@ -1,38 +1,32 @@
 using System.Threading.Tasks;
-using AutoMapper;
+
 using Lykke.Cqrs;
-using Lykke.Snow.PriceAlerts.Domain.Models;
+using Lykke.RabbitMqBroker.Subscriber;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using Lykke.Snow.PriceAlerts.ExternalContracts;
-using Lykke.Snow.PriceAlerts.Settings;
 
 namespace Lykke.Snow.PriceAlerts.Services
 {
     public class StartupManager
     {
         private readonly IPriceAlertsCache _priceAlertsCache;
-        private readonly IRabbitMqService _rabbitMqService;
         private readonly IQuoteCache _quoteCache;
-        private readonly IMapper _mapper;
-        private readonly PriceAlertsSettings _settings;
         private readonly IProductsCache _productsCache;
         private readonly ICqrsEngine _cqrsEngine;
+        private readonly RabbitMqListener<BidAskPairRabbitMqContract> _quoteListener;
 
-        public StartupManager(IProductsCache productsCache,
+        public StartupManager(
+            IProductsCache productsCache,
             IPriceAlertsCache priceAlertsCache,
-            IRabbitMqService rabbitMqService,
             IQuoteCache quoteCache,
-            IMapper mapper,
-            PriceAlertsSettings settings,
-            ICqrsEngine cqrsEngine)
+            ICqrsEngine cqrsEngine,
+            RabbitMqListener<BidAskPairRabbitMqContract> quoteListener)
         {
             _productsCache = productsCache;
             _priceAlertsCache = priceAlertsCache;
-            _rabbitMqService = rabbitMqService;
             _quoteCache = quoteCache;
-            _mapper = mapper;
-            _settings = settings;
             _cqrsEngine = cqrsEngine;
+            _quoteListener = quoteListener;
         }
 
         internal async Task Start()
@@ -41,19 +35,10 @@ namespace Lykke.Snow.PriceAlerts.Services
             await _priceAlertsCache.Init();
             await _quoteCache.Init();
 
-            StartRabbitMqServices();
-            
+            _quoteListener.Start();
+
             _cqrsEngine.StartPublishers();
             _cqrsEngine.StartSubscribers();
-        }
-
-        private void StartRabbitMqServices()
-        {
-            _rabbitMqService.Subscribe(_settings.RabbitMq.Consumers.QuotesRabbitMqSettings,
-                false,
-                quote => _quoteCache.AddOrUpdate(
-                    _mapper.Map<BidAskPairRabbitMqContract, QuoteCacheModel>(quote)),
-                _rabbitMqService.GetJsonDeserializer<BidAskPairRabbitMqContract>());
         }
     }
 }

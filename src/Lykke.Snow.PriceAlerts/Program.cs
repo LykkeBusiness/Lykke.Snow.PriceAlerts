@@ -125,6 +125,7 @@ namespace Lykke.Snow.PriceAlerts
                             cBuilder.RegisterModule(new ServiceModule(settings.MeteorMessageExpiration));
                             if (!ctx.HostingEnvironment.IsEnvironment("test"))
                             {
+                                cBuilder.RegisterModule(new RabbitMqModule(settings.RabbitMq));
                                 cBuilder.RegisterModule(
                                     new DataModule(settings.Db.ConnectionString));
                                 cBuilder.RegisterModule(new CqrsModule(settings.Cqrs));
