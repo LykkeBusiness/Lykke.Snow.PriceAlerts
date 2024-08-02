@@ -6,9 +6,11 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Solution items", "0. Solution items", "{00000000-0000-0000-0000-000000000000}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		.editorconfig = .editorconfig
 		LICENSE = LICENSE
 		README.md = README.md
-		settings.yaml = settings.yaml
+		CHANGELOG.md = CHANGELOG.md
+		global.json = global.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Domain", "1. Domain", "{CC2067D7-1971-47BB-B491-5649EA3C18B2}"
