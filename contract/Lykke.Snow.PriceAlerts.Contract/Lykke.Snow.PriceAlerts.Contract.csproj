@@ -9,20 +9,16 @@
         <PackageId>Lykke.Snow.PriceAlerts.Contracts</PackageId>
         <RepositoryType>git</RepositoryType>
         <PackageTags>Lykke</PackageTags>
-        <!--
-          To prevent null reference exceptions, it is better to have corresponding warnings as errors.
-          Link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
-        -->
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0"/>
-        <PackageReference Include="Lykke.Contracts" Version="2.0.3"/>
-        <PackageReference Include="MessagePack" Version="1.9.11"/>
-        <PackageReference Include="Refit" Version="5.2.4"/>
-        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0"/>
+        <PackageReference Include="JetBrains.Annotations" />
+        <PackageReference Include="Lykke.Contracts" />
+        <PackageReference Include="MessagePack" />
+        <PackageReference Include="Refit" />
+        <PackageReference Include="System.ComponentModel.Annotations" />
     </ItemGroup>
 
 </Project>
