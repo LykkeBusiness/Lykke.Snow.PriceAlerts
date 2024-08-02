@@ -10,12 +10,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="LykkeBiz.Common.MsSql" Version="5.0.2" />
+        <PackageReference Include="AutoMapper" />
+        <PackageReference Include="LykkeBiz.Common.MsSql" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj"/>
+        <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj" />
     </ItemGroup>
 
 </Project>
