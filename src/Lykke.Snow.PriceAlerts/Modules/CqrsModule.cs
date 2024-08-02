@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using Autofac;
+
+using Lykke.Common.Log;
 using Lykke.Cqrs;
 using Lykke.Cqrs.Configuration;
 using Lykke.Cqrs.Configuration.BoundedContext;
@@ -77,8 +79,10 @@ namespace Lykke.Snow.PriceAlerts.Modules
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterDefaultRouting(),
                 RegisterContext(),
+#pragma warning disable CS0612 // Type or member is obsolete
                 Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(log)),
                 Register.EventInterceptors(new DefaultEventLoggingInterceptor(log)));
+#pragma warning restore CS0612 // Type or member is obsolete
 
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
