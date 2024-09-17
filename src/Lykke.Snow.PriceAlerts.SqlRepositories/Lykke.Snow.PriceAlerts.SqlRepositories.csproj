@@ -1,21 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <Version>1.8.0</Version>
-        <LangVersion>8.0</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="10.1.1"/>
-        <PackageReference Include="LykkeBiz.Common.MsSql" Version="4.0.6"/>
+        <PackageReference Include="AutoMapper" />
+        <PackageReference Include="LykkeBiz.Common.MsSql" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj"/>
+        <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj" />
     </ItemGroup>
 
 </Project>
