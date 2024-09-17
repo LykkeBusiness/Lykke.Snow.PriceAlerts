@@ -32,7 +32,7 @@ namespace Lykke.Snow.PriceAlerts
     internal sealed class Program
     {
         private static readonly string ApiName = "PriceAlerts";
-        
+
         public static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
@@ -110,7 +110,7 @@ namespace Lykke.Snow.PriceAlerts
                         .AddSwaggerGenNewtonsoftSupport();
 
                     builder.Services.AddAutoMapper(typeof(PriceAlertsProfile), typeof(StorageMappingProfile));
-                    
+
                     builder.Services.AddDelegatingHandler(settings.OidcSettings);
 
                     builder.Services.AddSingleton(provider => new NotSuccessStatusCodeDelegatingHandler());

@@ -17,12 +17,16 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\contract\Lykke.Snow.PriceAlerts.Contract\Lykke.Snow.PriceAlerts.Contract.csproj" />
+        <ProjectReference
+            Include="..\..\contract\Lykke.Snow.PriceAlerts.Contract\Lykke.Snow.PriceAlerts.Contract.csproj" />
         <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj" />
-        <ProjectReference Include="..\Lykke.Snow.PriceAlerts.DomainServices\Lykke.Snow.PriceAlerts.DomainServices.csproj" />
-        <ProjectReference Include="..\Lykke.Snow.PriceAlerts.SqlRepositories\Lykke.Snow.PriceAlerts.SqlRepositories.csproj" />
+        <ProjectReference
+            Include="..\Lykke.Snow.PriceAlerts.DomainServices\Lykke.Snow.PriceAlerts.DomainServices.csproj" />
+        <ProjectReference
+            Include="..\Lykke.Snow.PriceAlerts.SqlRepositories\Lykke.Snow.PriceAlerts.SqlRepositories.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" />
         <PackageReference Include="AutoMapper" />
         <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" />
         <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" />
@@ -33,8 +37,7 @@
         <PackageReference Include="LykkeBiz.Snow.Cqrs" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
         <PackageReference Include="Lykke.Middlewares" />
-        <PackageReference Include="Lykke.Logs.Serilog" />
-        <PackageReference Include="Serilog.AspNetCore" />
+        <PackageReference Include="LykkeBiz.Logs.Serilog" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" />
     </ItemGroup>
