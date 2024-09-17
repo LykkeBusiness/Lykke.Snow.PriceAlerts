@@ -1,12 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <Version>1.7.0</Version>
+        <Version>1.8.0</Version>
+        <!--
+          To prevent null reference exceptions, it is better to have corresponding warnings as errors.
+          Link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
+        -->
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\contract\Lykke.Snow.PriceAlerts.Contract\Lykke.Snow.PriceAlerts.Contract.csproj" />
+        <ProjectReference
+            Include="..\..\contract\Lykke.Snow.PriceAlerts.Contract\Lykke.Snow.PriceAlerts.Contract.csproj" />
         <ProjectReference Include="..\Lykke.Snow.PriceAlerts.Domain\Lykke.Snow.PriceAlerts.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>

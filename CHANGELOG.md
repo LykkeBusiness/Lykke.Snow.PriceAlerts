@@ -1,16 +1,21 @@
+## 1.8.0 - Nova 2. Delivery 44 (August 16, 2024)
+### What's changed
+* LT-5522: Update rabbitmq broker library with new rabbitmq.client and templates.
+
+### Deployment
+The deployment of this version might require deletion of the queue `lykke.mt.pricefeed.Lykke.Snow.PriceAlerts.DefaultEnv` since it is not durable.
+
+Please be aware that the provided queue names may include environment-specific identifiers (e.g., dev, test, prod). Be sure to replace these with the actual environment name in use. The same applies to instance names embedded within the queue names (e.g., DefaultEnv, etc.).
+
 ## 1.7.0 - Nova 2. Delivery 41 (March 29, 2024)
 ### What's changed
 * LT-5443: Update packages.
-
-
 
 
 ## 1.6.0 - Nova 2. Delivery 40 (February 28, 2024)
 ### What's changed
 * LT-5281: Step: deprecated packages validation is failed.
 * LT-5254: Update lykke.httpclientgenerator to 5.6.2.
-
-
 
 
 ## 1.5.0 - Nova 2. Delivery 39 (January 30, 2024)
@@ -38,7 +43,6 @@ OidcSettings section looks the following way:
 ```
 
 Hyphen-styled naming is optional. First of all Pascal-case-styled property (e.g. `ApiAuthority`) names will be checked. If not found, we'll fall back to hyphen-styled property names.
-
 
 
 ## 1.4.0 - Nova 2. Delivery 36 (2023-08-31)
