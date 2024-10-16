@@ -154,10 +154,23 @@ namespace Lykke.Snow.PriceAlerts
 
                     app.MapControllers();
                     app.MapHealthChecks("/healthz");
-                    
-                    var startupManager = app.Services.GetRequiredService<StartupManager>();
-                    await startupManager.Start();
 
+                    app.Lifetime.ApplicationStarted.Register(async () =>
+                    {
+                        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+                        try
+                        {
+                            var startupManager = app.Services.GetRequiredService<StartupManager>();
+                            await startupManager.Start();
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError(e, "Failed to start");
+                            app.Lifetime.StopApplication();
+                            return;
+                        }
+                        logger.LogInformation($"{nameof(Program)} started");
+                    });
 
                     await app.RunAsync();
                 }
