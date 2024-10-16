@@ -8,6 +8,7 @@ using Autofac.Extensions.DependencyInjection;
 using Lykke.Logs.Serilog;
 using Lykke.Middlewares;
 using Lykke.SettingsReader;
+using Lykke.Snow.Common.AssemblyLogging;
 using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Common.Startup.ApiKey;
 using Lykke.Snow.Common.Startup.HttpClientGenerator;
@@ -22,6 +23,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -74,6 +76,7 @@ namespace Lykke.Snow.PriceAlerts
                     var settings = settingsManager.CurrentValue.PriceAlerts ??
                                    throw new ArgumentException("PriceAlerts settings not found");
 
+                    builder.Services.AddAssemblyLogger();
                     builder.Services.AddSingleton(settings);
                     builder.Services.AddSingleton(settings.Cqrs.ContextNames);
                     builder.Services
@@ -152,9 +155,22 @@ namespace Lykke.Snow.PriceAlerts
                     app.MapControllers();
                     app.MapHealthChecks("/healthz");
 
-                    var startupManager = app.Services.GetRequiredService<StartupManager>();
-                    await startupManager.Start();
-
+                    app.Lifetime.ApplicationStarted.Register(async () =>
+                    {
+                        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+                        try
+                        {
+                            var startupManager = app.Services.GetRequiredService<StartupManager>();
+                            await startupManager.Start();
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError(e, "Failed to start");
+                            app.Lifetime.StopApplication();
+                            return;
+                        }
+                        logger.LogInformation($"{nameof(Program)} started");
+                    });
 
                     await app.RunAsync();
                 }
