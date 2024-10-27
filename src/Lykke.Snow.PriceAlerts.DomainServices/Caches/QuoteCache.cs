@@ -2,9 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
-using Common;
 using Lykke.Snow.PriceAlerts.Domain.Models;
 using Lykke.Snow.PriceAlerts.Domain.Services;
 using MarginTrading.Backend.Contracts;
@@ -59,8 +59,8 @@ namespace Lykke.Snow.PriceAlerts.DomainServices.Caches
             {
                 _logger.LogWarning(
                     "Received quote is older than the quote in cache: cached {Cached}, received {Received}",
-                    previousQuote.ToJson(),
-                    quote.ToJson());
+                       JsonSerializer.Serialize(previousQuote),
+                    JsonSerializer.Serialize(quote));
                 return Task.CompletedTask;
             }
 
