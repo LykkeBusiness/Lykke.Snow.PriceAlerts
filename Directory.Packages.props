@@ -8,19 +8,19 @@
         <PackageVersion Include="coverlet.collector" Version="6.0.2" />
         <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
         <PackageVersion Include="JetBrains.Annotations" Version="2022.1.0" />
-        <PackageVersion Include="Lykke.Contracts" Version="3.0.0" />
+        <PackageVersion Include="Lykke.Contracts" Version="4.0.1" />
         <PackageVersion Include="LykkeBiz.Logs.Serilog" Version="3.3.3" />
-        <PackageVersion Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="7.6.1" />
-        <PackageVersion Include="Lykke.MarginTrading.AssetService.Contracts" Version="11.6.0" />
-        <PackageVersion Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.46.0" />
+        <PackageVersion Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="8.0.1" />
+        <PackageVersion Include="Lykke.MarginTrading.AssetService.Contracts" Version="13.0.2" />
+        <PackageVersion Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.57.0" />
         <PackageVersion Include="Lykke.Middlewares" Version="3.6.3" />
-        <PackageVersion Include="Lykke.Snow.Common.Startup" Version="4.0.0" />
-        <PackageVersion Include="Lykke.Snow.Common" Version="4.0.3" />
+        <PackageVersion Include="Lykke.Snow.Common.Startup" Version="4.1.0" />
+        <PackageVersion Include="Lykke.Snow.Common" Version="5.0.1" />
         <PackageVersion Include="LykkeBiz.Common.MsSql" Version="5.0.2" />
-        <PackageVersion Include="LykkeBiz.RabbitMqBroker" Version="14.0.0" />
-        <PackageVersion Include="LykkeBiz.SettingsReader" Version="9.0.0" />
-        <PackageVersion Include="LykkeBiz.Snow.Cqrs" Version="5.1.0" />
-        <PackageVersion Include="MessagePack" Version="1.9.11" />
+        <PackageVersion Include="LykkeBiz.RabbitMqBroker" Version="16.0.0" />
+        <PackageVersion Include="LykkeBiz.SettingsReader" Version="9.0.1" />
+        <PackageVersion Include="LykkeBiz.Snow.Cqrs" Version="7.0.1" />
+        <PackageVersion Include="MessagePack" Version="2.5.187" />
         <PackageVersion Include="Meteor.Client" Version="1.2.0" />
         <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
         <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
