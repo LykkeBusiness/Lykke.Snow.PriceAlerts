@@ -8,6 +8,8 @@ using Autofac.Extensions.DependencyInjection;
 using Lykke.Logs.Serilog;
 using Lykke.Middlewares;
 using Lykke.SettingsReader;
+using Lykke.SettingsReader.ConfigurationProvider;
+using Lykke.SettingsReader.SettingsTemplate;
 using Lykke.Snow.Common.AssemblyLogging;
 using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Common.Startup.ApiKey;
@@ -65,11 +67,17 @@ namespace Lykke.Snow.PriceAlerts
                         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
                     // for serilog configuration and environment variables (e.g. SettingsUrl, etc.)
-                    var configuration = builder.Configuration
+                    var configurationBuilder = builder.Configuration
                         .SetBasePath(builder.Environment.ContentRootPath)
                         .AddSerilogJson(builder.Environment)
-                        .AddEnvironmentVariables()
-                        .Build();
+                        .AddEnvironmentVariables();
+
+                    if (Environment.GetEnvironmentVariable("SettingsUrl")?.StartsWith("http") ?? false)
+                    {
+                        configurationBuilder.AddHttpSourceConfiguration();
+                    }
+
+                    var configuration = configurationBuilder.Build();
 
                     // for the rest of the settings
                     var settingsManager = configuration.LoadSettings<AppSettings>(_ => { });
@@ -137,6 +145,8 @@ namespace Lykke.Snow.PriceAlerts
                         })
                         .UseSerilog((_, cfg) => cfg.ReadFrom.Configuration(configuration));
 
+                    builder.Services.AddSettingsTemplateGenerator();
+
                     var app = builder.Build();
 
                     if (app.Environment.IsDevelopment())
@@ -154,6 +164,7 @@ namespace Lykke.Snow.PriceAlerts
 
                     app.MapControllers();
                     app.MapHealthChecks("/healthz");
+                    app.AddSettingsTemplateEndpoint();
 
                     app.Lifetime.ApplicationStarted.Register(async () =>
                     {
