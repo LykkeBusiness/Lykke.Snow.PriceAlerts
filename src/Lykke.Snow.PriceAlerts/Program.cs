@@ -164,7 +164,7 @@ namespace Lykke.Snow.PriceAlerts
 
                     app.MapControllers();
                     app.MapHealthChecks("/healthz");
-                    app.AddSettingsTemplateEndpoint();
+                    app.MapSettingsTemplate();
 
                     app.Lifetime.ApplicationStarted.Register(async () =>
                     {
