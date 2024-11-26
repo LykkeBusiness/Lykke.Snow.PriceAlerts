@@ -11,12 +11,10 @@ The Price alerts service allows users to receive custom notifications when an as
   "API_AUTHORITY": "String",
   "APP_UID": "Integer",
   "ASPNETCORE_ENVIRONMENT": "String",
-  "ASPNETCORE_ENVIRONMENT_TEST1": "String",
   "CLIENT_ID": "String",
   "CLIENT_SCOPE": "String",
   "CLIENT_SECRET": "String",
   "ENVIRONMENT": "String",
-  "ENVIRONMENT_TEST1": "String",
   "ENV_INFO": "String",
   "PriceAlerts": {
     "AssetService": {
