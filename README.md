@@ -5,6 +5,97 @@ The Price alerts service allows users to receive custom notifications when an as
 ## General configuration
 
 <!-- MARKDOWN-AUTO-DOCS:START (CODE:src=./template.json) -->
+<!-- The below code snippet is automatically added from ./template.json -->
+```json
+{
+  "API_AUTHORITY": "String",
+  "APP_UID": "Integer",
+  "ASPNETCORE_ENVIRONMENT": "String",
+  "ASPNETCORE_ENVIRONMENT_TEST1": "String",
+  "CLIENT_ID": "String",
+  "CLIENT_SCOPE": "String",
+  "CLIENT_SECRET": "String",
+  "ENVIRONMENT": "String",
+  "ENVIRONMENT_TEST1": "String",
+  "ENV_INFO": "String",
+  "PriceAlerts": {
+    "AssetService": {
+      "ApiKey": "String",
+      "Url": "String"
+    },
+    "Cqrs": {
+      "ConnectionString": "String",
+      "EnvironmentName": "String",
+      "RetryDelay": "DateTime"
+    },
+    "Db": {
+      "ConnectionString": "String"
+    },
+    "MeteorService": {
+      "Url": "String"
+    },
+    "OidcSettings": {
+      "Api-Authority": "String",
+      "Client-Id": "String",
+      "Client-Scope": "String",
+      "Client-Secret": "String",
+      "Renew-Token-Timeout-Sec": "Integer",
+      "Require-Https": "Boolean",
+      "Validate-Issuer-Name": "Boolean"
+    },
+    "PriceAlertsClient": {
+      "ApiKey": "String",
+      "Url": "String"
+    },
+    "RabbitMq": {
+      "Consumers": {
+        "QuotesRabbitMqSettings": {
+          "ConnectionString": "String",
+          "ExchangeName": "String"
+        }
+      },
+      "Publishers": {}
+    },
+    "TradingCore": {
+      "ApiKey": "String",
+      "Url": "String"
+    }
+  },
+  "RENEW_TOKEN_TIMEOUT_SEC": "Integer",
+  "REQUIRE_HTTPS": "Boolean",
+  "serilog": {
+    "Enrich": [
+      "String"
+    ],
+    "minimumLevel": {
+      "default": "String"
+    },
+    "Properties": {
+      "Application": "String"
+    },
+    "Using": [
+      "String"
+    ],
+    "writeTo": [
+      {
+        "Args": {
+          "configure": [
+            {
+              "Args": {
+                "outputTemplate": "String"
+              },
+              "Name": "String"
+            }
+          ]
+        },
+        "Name": "String"
+      }
+    ]
+  },
+  "TZ": "String",
+  "VALIDATE_ISSUER_NAME": "Boolean"
+}
+```
 <!-- MARKDOWN-AUTO-DOCS:END -->
 
 `QuotesRabbitMqSettings` describes a queue that is connected to the best price exchange of MT Core service.
